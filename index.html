@@ -406,6 +406,25 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .srcleg i{width:.5rem;height:.5rem;border-radius:50%;background:var(--t)}
 .srcans{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--k-line);font-size:.75rem;color:var(--k-muted)}
 .srcans b{color:var(--t);font-weight:600}
+.srcleg .trbtn{margin-left:auto;height:1.75rem;padding:0 .625rem;font-size:.75rem}
+.srcleg .trbtn .k-i{width:.875rem;height:.875rem}
+.trbody{padding:.75rem 1rem 2rem}
+.trsub{font-size:.8125rem;color:var(--k-ink-2);margin:.25rem .25rem .75rem;line-height:1.5}
+.trwrap{position:relative;border:1px solid var(--k-line);border-radius:.625rem;background:var(--k-surface);padding:.5rem}
+#trace{display:block;width:100%;overflow:visible}
+#trace text{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;fill:var(--k-ink-2);pointer-events:none}
+#trace text.col{font-family:var(--k-font);font-size:9.5px;letter-spacing:.14em;fill:var(--k-muted);font-weight:600}
+#trace text.s{fill:var(--k-ink);font-size:10.5px}
+#trace path.rib{fill:var(--t);opacity:.26;transition:opacity .2s;cursor:pointer}
+#trace rect{cursor:pointer;transition:opacity .2s}
+#trace.hl path.rib{opacity:.06} #trace.hl path.rib.on{opacity:.6}
+#trace.hl rect.src{opacity:.35} #trace.hl rect.src.on{opacity:1}
+#trace .imp{fill:var(--t);offset-rotate:0deg;animation:trimp var(--d,4s) linear forwards;opacity:0;filter:drop-shadow(0 0 4px var(--t))}
+@keyframes trimp{0%{offset-distance:0%;opacity:0}8%{opacity:1}92%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@media (prefers-reduced-motion:reduce){#trace .imp{display:none}}
+.trtip{position:absolute;display:none;pointer-events:none;background:var(--k-raised);border:1px solid var(--k-line-2);border-radius:.375rem;padding:.375rem .5rem;font-size:.75rem;color:var(--k-ink);box-shadow:var(--k-shadow-float);white-space:nowrap;z-index:5}
+.trtip span{color:var(--t);font-weight:600}
+.trbody .srcleg{margin:.75rem .25rem 0}
 .srcitem.hl{background:var(--k-surface);border-color:var(--k-line-2)}
 .srcitem.focus{background:var(--k-surface);border-color:var(--k-line-2)}
 .srcitem .from{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--k-muted);min-width:0}
@@ -531,9 +550,9 @@ const CANNED={
   conf:{tier:'certified',pct:100,why:'Every figure comes from certified measures in the Denials mart, each with an owner and a definition authority.'},
   tiles:[['Denied amount','$4.21M'],['Change vs prior month','+6.4%']],
   sources:[
-   {n:1,q:'Denied Amount v1 by payer · 2026-09',label:'denials mart',tier:'certified',src:'Denials Analytics · Denied Dollars by Payer',ttl:'Denied Amount by Payer, month close 2026-09',cell:'Column <code>Denied Amount</code> × rows <code>Total</code>, <code>Payer A</code>, <code>Payer B</code>',val:'$4.21M · $1.48M · $0.94M',asof:'Month close 10/05/2026'},
-   {n:2,q:'Denied Amount v1 by payer · 2026-09',label:'denial reasons',tier:'certified',src:'Denials Analytics · Denials by Reason Code',ttl:'Payer C · CARC 50 (medical necessity)',cell:'Row <code>Payer C</code> × column <code>CARC 50</code>, service line <code>Sleep studies</code>',val:'$0.58M',asof:'Month close 10/05/2026'},
-   {n:3,q:'Open claims under changed payer rules',label:'payer policy log',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',asof:'Refreshed 10/22/2026'}
+   {n:1,q:'Denied Amount v1 by payer · 2026-09',label:'denials mart',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denied Dollars by Payer',ttl:'Denied Amount by Payer, month close 2026-09',cell:'Column <code>Denied Amount</code> × rows <code>Total</code>, <code>Payer A</code>, <code>Payer B</code>',val:'$4.21M · $1.48M · $0.94M',asof:'Month close 10/05/2026'},
+   {n:2,q:'Denied Amount v1 by payer · 2026-09',label:'denial reasons',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denials by Reason Code',ttl:'Payer C · CARC 50 (medical necessity)',cell:'Row <code>Payer C</code> × column <code>CARC 50</code>, service line <code>Sleep studies</code>',val:'$0.58M',asof:'Month close 10/05/2026'},
+   {n:3,q:'Open claims under changed payer rules',label:'payer policy log',kind:'Policy rule',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',asof:'Refreshed 10/22/2026'}
   ],
   fups:[{t:'Show the 312 affected claims by facility'},{t:'Trend denial rate by month, last 12 months'},{t:'Schedule this as a weekly Monday digest',act:true}]
  },
@@ -547,9 +566,9 @@ const CANNED={
   conf:{tier:'assisted',pct:62,why:'Cash is certified, but the goal comes from an uploaded workbook and the proration is Kinetic\'s own assumption. Verify before sharing.'},
   tiles:[['Cash collected MTD','$18.42M'],['Percent of MTD goal','87.5%']],
   sources:[
-   {n:1,q:'Cash Collected MTD v1 · 2026-11',label:'daily cash',tier:'certified',src:'Cash Management · Daily Cash Posting',ttl:'Cash Collected MTD, all facilities',cell:'Row <code>All facilities</code> × column <code>MTD Cash</code>, posted through 11/15/2026',val:'$18,421,906.40',asof:'Refreshed 11/16/2026'},
-   {n:2,q:'Cash goal · November 2026',label:'budget upload',tier:'assisted',src:'Uploaded file · FY27_Cash_Goals.xlsx',ttl:'Sheet “Monthly goals”, cell D14',cell:'Row <code>November 2026</code> × column <code>Cash Goal</code>, not certified',val:'$42,100,000.00',asof:'Uploaded by Finance 10/03/2026'},
-   {n:3,q:'Cash goal · November 2026',label:'kinetic assumption',tier:'assisted',src:'Kinetic · Derived value',ttl:'Prorated month-to-date goal',cell:'Calendar-day proration, <code>15 of 30 days</code>',val:'$21,050,000.00',asof:'Computed for this answer'}
+   {n:1,q:'Cash Collected MTD v1 · 2026-11',label:'daily cash',kind:'Governed measure',tier:'certified',src:'Cash Management · Daily Cash Posting',ttl:'Cash Collected MTD, all facilities',cell:'Row <code>All facilities</code> × column <code>MTD Cash</code>, posted through 11/15/2026',val:'$18,421,906.40',asof:'Refreshed 11/16/2026'},
+   {n:2,q:'Cash goal · November 2026',label:'budget upload',kind:'Uploaded value',tier:'assisted',src:'Uploaded file · FY27_Cash_Goals.xlsx',ttl:'Sheet “Monthly goals”, cell D14',cell:'Row <code>November 2026</code> × column <code>Cash Goal</code>, not certified',val:'$42,100,000.00',asof:'Uploaded by Finance 10/03/2026'},
+   {n:3,q:'Cash goal · November 2026',label:'kinetic assumption',kind:'Derived value',tier:'assisted',src:'Kinetic · Derived value',ttl:'Prorated month-to-date goal',cell:'Calendar-day proration, <code>15 of 30 days</code>',val:'$21,050,000.00',asof:'Computed for this answer'}
   ],
   fups:[{t:'Break the gap down by facility'},{t:'Show daily cash against a straight-line goal'},{t:'Ask Finance to certify the goal workbook',act:true}]
  },
@@ -566,9 +585,9 @@ const CANNED={
   conf:{tier:'governed',pct:88,why:'Both operands are certified measures. The 15.64% share is derived from them and has no certified definition of its own.'},
   tiles:[['Accounts AR 90+','$103.7M'],['Share of total A/R','15.64%']],
   sources:[
-   {n:1,q:'Accounts AR 90+ v1 · 2026-10',label:'a/r aging',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts AR 90+, all facilities',cell:'Row <code>All facilities</code> × column <code>AR 90+</code>',val:'$103,746,373.86',asof:'Snapshot 10/22/2026'},
-   {n:2,q:'Accounts Total Current Balance v1 · 2026-10',label:'a/r aging',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts Total Current Balance, all facilities',cell:'Row <code>All facilities</code> × column <code>Total A/R</code>',val:'$663,353,084.96',asof:'Snapshot 10/22/2026'},
-   {n:3,q:'Accounts Total Current Balance v1 · 2026-10',label:'facility rollup',tier:'governed',src:'Receivables · Facility A/R Rollup',ttl:'Accounts in scope after filters',cell:'Filters <code>Real patients only</code>, <code>Balance ≠ 0</code>, <code>Current snapshot</code>',val:'48,212 accounts',asof:'Snapshot 10/22/2026'}
+   {n:1,q:'Accounts AR 90+ v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts AR 90+, all facilities',cell:'Row <code>All facilities</code> × column <code>AR 90+</code>',val:'$103,746,373.86',asof:'Snapshot 10/22/2026'},
+   {n:2,q:'Accounts Total Current Balance v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts Total Current Balance, all facilities',cell:'Row <code>All facilities</code> × column <code>Total A/R</code>',val:'$663,353,084.96',asof:'Snapshot 10/22/2026'},
+   {n:3,q:'Accounts Total Current Balance v1 · 2026-10',label:'facility rollup',kind:'Filter set',tier:'governed',src:'Receivables · Facility A/R Rollup',ttl:'Accounts in scope after filters',cell:'Filters <code>Real patients only</code>, <code>Balance ≠ 0</code>, <code>Current snapshot</code>',val:'48,212 accounts',asof:'Snapshot 10/22/2026'}
   ],
   fups:[{t:'Break this down by facility'},{t:'Compare to the same month last year'},{t:'Pin this to the Analytical library',act:true}]
  }
@@ -627,17 +646,88 @@ function msgActsHTML(m,mi){
     ${src.length?`<button class="srcpill${open?' on':''}" data-sources="1"><span class="srcstack">${tiers.map(t=>`<i class="tier-${t}">${ic(TIERS[t].icon)}</i>`).join('')}</span>${src.length} sources</button>`:''}
   </div>`;
 }
+function tierLegHTML(src){
+  return Object.keys(TIERS).map(k=>[k,src.filter(s=>s.tier===k).length]).filter(x=>x[1]).map(([k,n])=>`<span class="tier-${k}"><i></i>${n} ${TIERS[k].name}</span>`).join('');
+}
+function traceHTML(){
+  const a=S.canvas.answer,src=a.sources||[],t=a.conf&&TIERS[a.conf.tier];
+  return `<aside class="canvas">
+    <div class="cvhead"><button class="k-iconbtn" data-trace="back" title="Back to sources" aria-label="Back to sources">${ic('arrow-left')}</button><span class="cvicon">${ic('brain')}</span><b>Trace in Cerebrum</b><span class="spacer"></span>
+      <button class="k-iconbtn" id="cvClose" title="Close" aria-label="Close">${ic('x')}</button></div>
+    <div class="k-scroll"><div class="trbody">
+      <div class="trsub">How this answer's ${src.length} sources connect, from data product to the exact cell Kinetic read.${t?` Answer confidence: <b class="tier-${a.conf.tier}" style="color:var(--t)">${t.name} · ${a.conf.pct}%</b>.`:''}</div>
+      <div class="trwrap"><svg id="trace" role="img" aria-label="Sankey: data product, kind, cited cell"></svg><div class="trtip" id="trtip"></div></div>
+      <div class="srcleg">${tierLegHTML(src)}</div>
+      <p class="cvq" style="padding:0 .25rem">One ribbon per source, colored by its confidence level. Impulses follow the data from its product to the cited cell. Select a cell to see it in the source list.</p>
+    </div></div>
+  </aside>`;
+}
+let traceTimer=null,traceHover=null;
+function drawTrace(){
+  clearTimeout(traceTimer);
+  const svg=el('trace');if(!svg||!S.canvas||!S.canvas.answer)return;
+  const NS='http://www.w3.org/2000/svg',src=S.canvas.answer.sources||[];
+  const W=svg.clientWidth||520,H=Math.max(250,src.length*58+60);
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.style.height=H+'px';svg.innerHTML='';
+  const prodOf=s=>s.src.split(' · ')[0];
+  const cols=[[],[],[]];
+  const add=(ci,id,label)=>{let n=cols[ci].find(x=>x.id===id);if(!n)cols[ci].push(n={id,label,items:[]});return n};
+  src.forEach(s=>{add(0,'p:'+prodOf(s),prodOf(s)).items.push(s);add(1,'k:'+s.kind,s.kind).items.push(s);add(2,'s:'+s.n,s.ttl).items.push(s)});
+  const pad=14,top=30,cw=12,left=6,usable=H-top-10,colX=[left,W/2-cw/2,W-left-cw];
+  const maxN=Math.max(...cols.map(c=>c.length));
+  const unit=Math.min(40,(usable-pad*(maxN-1))/src.length);
+  cols.forEach(col=>{const tot=src.length*unit+pad*(col.length-1);let y=top+(usable-tot)/2;col.forEach(n=>{n.y=y;n.h=n.items.length*unit;y+=n.h+pad})});
+  const yOf=(ci,s)=>{const n=cols[ci].find(x=>x.items.includes(s));return n.y+n.items.indexOf(s)*unit};
+  const g=(tag,attrs)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e};
+  const paths=new Map();
+  src.forEach(s=>{
+    const ys=[0,1,2].map(ci=>yOf(ci,s));let line='';
+    for(let seg=0;seg<2;seg++){
+      const x0=colX[seg]+cw,x1=colX[seg+1],mx=(x0+x1)/2,y0=ys[seg],y1=ys[seg+1];
+      const d=`M${x0},${y0} C${mx},${y0} ${mx},${y1} ${x1},${y1} L${x1},${y1+unit} C${mx},${y1+unit} ${mx},${y0+unit} ${x0},${y0+unit} Z`;
+      const r=g('path',{d,class:`rib tier-${s.tier}`,'data-n':s.n});svg.appendChild(r);
+      const c0=y0+unit/2,c1=y1+unit/2;
+      line+=(seg?` L${x0},${c0}`:`M${x0},${c0}`)+` C${mx},${c0} ${mx},${c1} ${x1},${c1}`;
+    }
+    paths.set(s.n,{d:line,len:W});
+  });
+  cols.forEach((col,ci)=>col.forEach(n=>{
+    const isS=ci===2,s0=n.items[0];
+    const r=g('rect',{x:colX[ci],y:n.y,width:cw,height:n.h,rx:2,class:isS?`src tier-${s0.tier}`:'',fill:isS?'var(--t)':'rgba(196,199,215,.55)'});
+    if(isS){r.setAttribute('style','fill:var(--t)');r.dataset.n=s0.n}
+    r.dataset.tip=isS?`${n.label}|${TIERS[s0.tier].name}|${s0.tier}`:`${n.label}|${n.items.length} source${n.items.length>1?'s':''}|`;
+    svg.appendChild(r);
+    const maxc=isS?Math.floor((W/2-46)/6.1):Math.floor((W/2-36)/2/6.1);
+    const lab=n.label.length>maxc?n.label.slice(0,maxc-1)+'…':n.label;
+    const t=g('text',{x:ci===0?colX[ci]+cw+6:colX[ci]-6,y:n.y+n.h/2+3.5,'text-anchor':ci===0?'start':'end',class:isS?'s':''});t.textContent=lab;svg.appendChild(t);
+  }));
+  ['DATA PRODUCT','KIND','CITED CELL'].forEach((lab,i)=>{const t=g('text',{class:'col',x:colX[i]+(i===2?cw:0),y:14,'text-anchor':i===2?'end':i===1?'middle':'start'});if(i===1)t.setAttribute('x',colX[1]+cw/2);t.textContent=lab;svg.appendChild(t)});
+  const tip=el('trtip');
+  const setHover=n=>{traceHover=n;svg.classList.toggle('hl',n!=null);svg.querySelectorAll('[data-n]').forEach(x=>x.classList.toggle('on',x.dataset.n==n))};
+  svg.onmousemove=e=>{
+    const t=e.target.closest('[data-n],[data-tip]');
+    setHover(t&&t.dataset.n?t.dataset.n:null);
+    const tp=e.target.closest('rect[data-tip]');
+    if(tp){const [l,sub,tier]=tp.dataset.tip.split('|');tip.className='trtip'+(tier?' tier-'+tier:'');tip.innerHTML=`${esc(l)} · <span>${esc(sub)}</span>`;const b=svg.parentNode.getBoundingClientRect();tip.style.display='block';const x=e.clientX-b.left+12;tip.style.left=Math.min(x,b.width-tip.offsetWidth-6)+'px';tip.style.top=(e.clientY-b.top+14)+'px'}else tip.style.display='none';
+  };
+  svg.onmouseleave=()=>{setHover(null);tip.style.display='none'};
+  svg.onclick=e=>{const t=e.target.closest('[data-n]');if(!t)return;const n=+t.dataset.n;S.canvas.view='list';S.canvas.focus=n;traceHover=null;S.keepScroll=true;render();requestAnimationFrame(()=>{const f=el('src-'+n);if(f)f.scrollIntoView({block:'nearest'})})};
+  const fire=s=>{const sv=el('trace');if(!sv)return;const r=paths.get(s.n);const c=g('circle',{r:3.4,class:'imp tier-'+s.tier});c.style.offsetPath=`path("${r.d}")`;c.style.setProperty('--d',(1.6+r.len/180).toFixed(2)+'s');c.addEventListener('animationend',()=>c.remove());sv.appendChild(c)};
+  src.forEach((s,i)=>setTimeout(()=>{if(el('trace')===svg)fire(s)},250+i*450));
+  const tick=()=>{if(el('trace')!==svg)return;const pool=traceHover!=null?src.filter(s=>s.n==traceHover):src;fire(pool[Math.floor(Math.random()*pool.length)]);traceTimer=setTimeout(tick,900+Math.random()*1400)};
+  traceTimer=setTimeout(tick,250+src.length*450+600);
+}
 function srcSumHTML(a,focus){
   const src=a.sources||[];if(!src.length)return '';
-  const counts=Object.keys(TIERS).map(k=>[k,src.filter(s=>s.tier===k).length]).filter(x=>x[1]);
   const t=a.conf&&TIERS[a.conf.tier];
   return `<div class="srcsum">
     <div class="srcbar" role="group" aria-label="Sources by confidence level">${src.map(s=>`<button class="tier-${s.tier}${focus==s.n?' on':''}" data-srcfocus="${s.n}" title="${esc(s.ttl)} · ${TIERS[s.tier].name}" aria-label="${esc(s.ttl)}, ${TIERS[s.tier].name}"></button>`).join('')}</div>
-    <div class="srcleg">${counts.map(([k,n])=>`<span class="tier-${k}"><i></i>${n} ${TIERS[k].name}</span>`).join('')}</div>
+    <div class="srcleg">${tierLegHTML(src)}<button class="k-btn trbtn" data-trace="open">${ic('brain')}Trace in Cerebrum</button></div>
     ${t?`<div class="srcans tier-${a.conf.tier}">Answer confidence: <b>${t.name} · ${a.conf.pct}%</b>, set by its lowest-level source</div>`:''}
   </div>`;
 }
 function sourcesHTML(){
+  if(S.canvas.view==='trace')return traceHTML();
   const c=S.canvas,a=c.answer,groups=[];
   (a.sources||[]).forEach(s=>{let g=groups.find(x=>x.q===s.q);if(!g)groups.push(g={q:s.q,items:[]});g.items.push(s)});
   return `<aside class="canvas">
@@ -1001,6 +1091,7 @@ function render(){
   if(S.panelOpen&&!S.thread.length&&!S.chips.length){const c=pageCtx();if(c){S.chips=[c];panel.innerHTML=panelHTML()}}
   for(const sc of document.querySelectorAll('#panel .k-scroll, #chatScroll')){const v=_keep&&(sc.id==='chatScroll'?_keep.chat:_keep.panel);sc.scrollTop=v!=null?v:sc.scrollHeight}
   if(S.page==='cerebrum')requestAnimationFrame(drawGalaxy);
+  if(S.canvas&&S.canvas.type==='sources'&&S.canvas.view==='trace')requestAnimationFrame(drawTrace);else clearTimeout(traceTimer);
 }
 
 /* ============ chat engine ============ */
@@ -1069,6 +1160,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.fbsubmit){submitFb(+b.dataset.fbsubmit);return}
   if(b.dataset.fbclose){S.fbOpen=null;S.keepScroll=true;render();return}
   if(b.dataset.fbopt){const [mi,r]=b.dataset.fbopt.split('|');const m=S.thread[+mi];if(m)m.fbReason=r;S.fbOpen=null;S.keepScroll=true;render();toast('Thanks for the feedback');return}
+  if(b.dataset.trace){if(S.canvas){S.canvas.view=b.dataset.trace==='open'?'trace':'list';traceHover=null}S.keepScroll=true;render();return}
   if(b.dataset.srcfocus){const n=+b.dataset.srcfocus;if(S.canvas)S.canvas.focus=n;S.keepScroll=true;render();requestAnimationFrame(()=>{const f=el('src-'+n);if(f)f.scrollIntoView({block:'nearest',behavior:'smooth'})});return}
   if(b.dataset.cite||b.dataset.sources){
     const host=b.closest('[data-mi]');const a=host?(S.thread[+host.dataset.mi]||{}).answer:(S.canvas&&S.canvas.answer);if(!a)return;
@@ -1110,6 +1202,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){if(S.modeOpen){S.modeOpen=false;render()}else if(S.panelOpen){S.panelOpen=false;render()}}
   if(e.key==='Enter'&&!e.shiftKey&&e.target.classList&&e.target.classList.contains('cinput')){e.preventDefault();send(e.target.value)}
 });
-window.addEventListener('resize',()=>{if(S.page==='cerebrum')drawGalaxy()});
+window.addEventListener('resize',()=>{if(S.page==='cerebrum')drawGalaxy();if(el('trace'))drawTrace()});
 render();
 </script>

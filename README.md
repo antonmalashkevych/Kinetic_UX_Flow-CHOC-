@@ -10,7 +10,7 @@ Interactive prototype of the chat-first ("Ana-first") unified chat flow for VQ8 
 - Kinetic-style run card: one-line step indicator (Step N of 7) with Show details accordion, 7-segment progress bar, skeleton placeholders while running
 - Finished answer card: Derivation/Operands sections, Grounding and Provenance rows, action bar (Open as report, Create dashboard, Add to library, Subscribe, Pin)
 - Confidence level on every answer: Certified (100%), Governed (70-99%), Assisted (below 70%), color coded green / blue / amber, with a ? tooltip showing the percentage, the reason, and the tier scale
-- Perplexity-style trust layer: inline citation chips (hover shows report, cell and value), thumbs up/down with an optional reason popover (plus "Tell us more" for free-text feedback in the same popover), and an "N sources" pill that opens a Sources pane on the right listing the exact report cell behind each figure
+- Perplexity-style trust layer: inline citation chips (hover shows report, cell and value), thumbs up/down with an optional reason popover (plus "Tell us more" for free-text feedback in the same popover), and an "N sources" pill that opens a Sources pane on the right listing the exact report cell behind each figure. The pane opens with a confidence summary bar, and "Trace in Cerebrum" switches it to a Cerebrum-style Sankey (data product, kind, cited cell) with impulses travelling along each source's ribbon, plus a back arrow to the list
 - Artifact canvas: Open as report / Create dashboard opens a Report or Dashboard on the right, chat stays left; from a docked panel it promotes to the full-screen split
 - Type Mode popup (Auto / Agentic), ChatGPT/Claude-style stop button, composer autofocus after a reply
 
