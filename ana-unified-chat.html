@@ -375,6 +375,15 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .fbopts{display:grid;gap:.5rem}
 .fbopt{display:block;width:100%;text-align:center;height:2.25rem;border:1px solid var(--k-line-2);border-radius:.5rem;font-size:.8125rem;color:var(--k-ink);background:var(--k-surface)}
 .fbopt:hover{border-color:var(--k-accent);background:var(--k-hover);color:var(--k-accent-ink)}
+.fbmore{display:block;margin:.75rem auto 0;font-size:.8125rem;color:var(--k-accent-ink);padding:.25rem .5rem;border-radius:.375rem}
+.fbmore:hover{background:var(--k-hover);text-decoration:underline}
+.fbpop .hd .fbback{margin:-.125rem 0 0 -.25rem;width:1.5rem;height:1.5rem}
+.fbtext{display:block;width:100%;min-height:6.5rem;resize:vertical;background:var(--k-surface);border:1px solid var(--k-line-2);border-radius:.5rem;padding:.625rem .75rem;font:inherit;font-size:.8125rem;line-height:1.5;color:var(--k-ink);outline:none}
+.fbtext:focus{border-color:var(--k-accent)}
+.fbtext::placeholder{color:var(--k-muted)}
+.fbsend{display:flex;align-items:center;gap:.5rem;margin-top:.625rem;font-size:.6875rem;color:var(--k-muted)}
+.fbsend .k-btn{margin-left:auto}
+.fbsend .k-btn:disabled{opacity:.45;pointer-events:none}
 .cvcount{font-size:.75rem;color:var(--k-muted);border:1px solid var(--k-line-2);border-radius:999px;padding:0 .4375rem;line-height:1.25rem}
 .srclist{padding:.5rem .75rem 2rem}
 .srcgrp{font-size:.75rem;color:var(--k-muted);margin:.875rem .75rem .25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -464,6 +473,7 @@ const IC={
  'sparkles':'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
  'external-link':'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>',
  'table':'<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+ 'arrow-left':'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
  'square':'<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none"/>'
 };
 function ic(name,cls){return `<svg class="k-i${cls?' '+cls:''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[name]||''}</svg>`}
@@ -478,7 +488,7 @@ const S={
   streaming:false,
   returnPage:null,
   libSeg:'tree', libChip:'All', cereTab:'Kinetic graph', cereGroup:'Plane', agentsTab:'My agents', convChip:'All',
-  mode:'Auto', modeOpen:false, modeWhere:'main', canvas:null, fbOpen:null, keepScroll:false
+  mode:'Auto', modeOpen:false, modeWhere:'main', canvas:null, fbOpen:null, fbWrite:false, keepScroll:false
 };
 
 const PROMPTS=[
@@ -582,8 +592,12 @@ function citeHTML(a,html){
 }
 function fbPopHTML(mi,dir){
   const f=FB[dir];
+  if(S.fbWrite)return `<div class="fbpop" role="dialog" aria-label="Feedback"><div class="hd"><button class="k-iconbtn fbback" data-fbback="1" title="Back" aria-label="Back">${ic('arrow-left')}</button><span>${f.q}</span><button class="k-iconbtn" data-fbclose="1" title="Close" aria-label="Close">${ic('x')}</button></div>
+    <textarea class="fbtext" data-mi="${mi}" placeholder="What should Kinetic have done differently? Mention a figure, filter or source if it helps." aria-label="Your feedback"></textarea>
+    <div class="fbsend"><span>⌘ Enter to submit</span><button class="k-btn k-btn--primary" data-fbsubmit="${mi}" disabled>Submit</button></div></div>`;
   return `<div class="fbpop" role="dialog" aria-label="Feedback"><div class="hd"><span>${f.q}</span><button class="k-iconbtn" data-fbclose="1" title="Close" aria-label="Close">${ic('x')}</button></div>
-    <div class="fbopts">${f.o.map(o=>`<button class="fbopt" data-fbopt="${mi}|${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+    <div class="fbopts">${f.o.map(o=>`<button class="fbopt" data-fbopt="${mi}|${esc(o)}">${esc(o)}</button>`).join('')}</div>
+    <button class="fbmore" data-fbmore="1">Tell us more</button></div>`;
 }
 function msgActsHTML(m,mi){
   const a=m.answer,src=a.sources||[];
@@ -1001,14 +1015,24 @@ function openLast(){
   S.threadTitle=S.lastThread.title;S.thread=S.lastThread.thread;
 }
 
+function submitFb(mi){
+  const t=document.querySelector('.fbtext');const v=t?t.value.trim():'';if(!v)return;
+  const m=S.thread[mi];if(m)m.fbText=v;
+  S.fbOpen=null;S.fbWrite=false;S.keepScroll=true;render();toast('Thanks for the feedback');
+}
+document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('fbtext')){const s=e.target.closest('.fbpop').querySelector('[data-fbsubmit]');if(s)s.disabled=!e.target.value.trim()}});
+
 /* ============ events ============ */
 document.addEventListener('click',e=>{
   if(S.modeOpen&&!e.target.closest('.k-modewrap')){S.modeOpen=false;render()}
-  if(S.fbOpen!=null&&!e.target.closest('.fbpop,[data-fb]')){S.fbOpen=null;S.keepScroll=true;render()}
+  if(S.fbOpen!=null&&!e.target.closest('.fbpop,[data-fb]')){S.fbOpen=null;S.fbWrite=false;S.keepScroll=true;render()}
   const b=e.target.closest('button, a[data-nav], a.k-navsec--link');if(!b)return;
   if(b.dataset.modebtn){S.modeOpen=!S.modeOpen;S.modeWhere=b.dataset.modebtn;render();return}
   if(b.dataset.mode){S.mode=b.dataset.mode;S.modeOpen=false;render();return}
-  if(b.dataset.fb){const [mi,dir]=b.dataset.fb.split(':');const m=S.thread[+mi];if(!m)return;if(m.fb===dir){m.fb=null;S.fbOpen=null}else{m.fb=dir;S.fbOpen=+mi}S.keepScroll=true;render();return}
+  if(b.dataset.fb){S.fbWrite=false;const [mi,dir]=b.dataset.fb.split(':');const m=S.thread[+mi];if(!m)return;if(m.fb===dir){m.fb=null;S.fbOpen=null}else{m.fb=dir;S.fbOpen=+mi}S.keepScroll=true;render();return}
+  if(b.dataset.fbmore){S.fbWrite=true;S.keepScroll=true;render();const t=document.querySelector('.fbtext');if(t)t.focus();return}
+  if(b.dataset.fbback){S.fbWrite=false;S.keepScroll=true;render();return}
+  if(b.dataset.fbsubmit){submitFb(+b.dataset.fbsubmit);return}
   if(b.dataset.fbclose){S.fbOpen=null;S.keepScroll=true;render();return}
   if(b.dataset.fbopt){const [mi,r]=b.dataset.fbopt.split('|');const m=S.thread[+mi];if(m)m.fbReason=r;S.fbOpen=null;S.keepScroll=true;render();toast('Thanks for the feedback');return}
   if(b.dataset.cite||b.dataset.sources){
@@ -1046,7 +1070,8 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='j'){e.preventDefault();S.panelOpen=!S.panelOpen;render()}
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();S.page='search';render()}
-  if(e.key==='Escape'&&S.fbOpen!=null){S.fbOpen=null;S.keepScroll=true;render();return}
+  if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)&&e.target.classList&&e.target.classList.contains('fbtext')){e.preventDefault();submitFb(+e.target.dataset.mi);return}
+  if(e.key==='Escape'&&S.fbOpen!=null){S.fbWrite=false;S.fbOpen=null;S.keepScroll=true;render();return}
   if(e.key==='Escape'){if(S.modeOpen){S.modeOpen=false;render()}else if(S.panelOpen){S.panelOpen=false;render()}}
   if(e.key==='Enter'&&!e.shiftKey&&e.target.classList&&e.target.classList.contains('cinput')){e.preventDefault();send(e.target.value)}
 });
