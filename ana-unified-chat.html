@@ -329,7 +329,7 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .groundnote{font-size:.6875rem;color:var(--k-muted);text-align:center;margin-top:.375rem}
 
 /* ===== answer trust layer: confidence, citations, sources, feedback ===== */
-.tier-certified{--t:var(--k-ok)} .tier-governed{--t:var(--k-info)} .tier-assisted{--t:var(--k-warn)}
+.tier-certified{--t:var(--k-ok)} .tier-governed{--t:var(--k-info)} .tier-assisted{--t:var(--k-warn)} .tier-partial{--t:var(--k-bad)}
 .anscard{overflow:visible}
 .anscard .ansfoot{border-radius:0 0 var(--k-r) var(--k-r)}
 .ahead .conf{margin-left:auto;display:inline-flex;align-items:center;gap:.375rem;font-size:.75rem;color:var(--k-muted)}
@@ -443,16 +443,16 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .srcitem .val{color:var(--k-ink);font-weight:600;font-variant-numeric:tabular-nums}
 
 /* data-access gap notice: always the first thing in an answer when Kinetic can't read what the question needs */
-.gapnote{border:1px solid color-mix(in srgb,var(--k-warn) 55%,transparent);border-left:3px solid var(--k-warn);background:color-mix(in srgb,var(--k-warn) 9%,var(--k-surface));border-radius:.5rem;padding:.875rem 1rem;margin:0 0 1rem}
+.gapnote{border:1px solid color-mix(in srgb,var(--k-bad) 55%,transparent);border-left:3px solid var(--k-bad);background:color-mix(in srgb,var(--k-bad) 9%,var(--k-surface));border-radius:.5rem;padding:.875rem 1rem;margin:0 0 1rem}
 .gapnote .gh{display:flex;align-items:flex-start;gap:.5rem;font-size:.9375rem;font-weight:600;color:var(--k-ink);line-height:1.4}
-.gapnote .gh .k-i{width:1.125rem;height:1.125rem;color:var(--k-warn);flex:none;margin-top:.0625rem}
+.gapnote .gh .k-i{width:1.125rem;height:1.125rem;color:var(--k-bad);flex:none;margin-top:.0625rem}
 .gapnote p{margin:.375rem 0 0 1.625rem;font-size:.875rem;line-height:1.6;color:var(--k-ink-2)}
 .gapnote .gmiss{display:flex;flex-wrap:wrap;align-items:center;gap:.3125rem;margin:.625rem 0 0 1.625rem;font-size:.75rem;color:var(--k-muted)}
-.gapnote .gmiss code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;padding:1px 6px;border-radius:4px;color:var(--k-ink);background:var(--k-raised);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--k-warn) 70%,transparent)}
+.gapnote .gmiss code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;padding:1px 6px;border-radius:4px;color:var(--k-ink);background:var(--k-raised);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--k-bad) 70%,transparent)}
 .gapnote .gacts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 0 1.625rem}
 .gapnote .gacts .k-btn{height:1.875rem;font-size:.75rem}
 .prose .ctxh{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;font-size:1rem;font-weight:600;color:var(--k-ink);margin:.25rem 0 .5rem}
-.prose .ctxh .tag{font-size:.6875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--k-warn);border:1px solid color-mix(in srgb,var(--k-warn) 50%,transparent);border-radius:999px;padding:1px 8px}
+.prose .ctxh .tag{font-size:.6875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--k-bad);border:1px solid color-mix(in srgb,var(--k-bad) 50%,transparent);border-radius:999px;padding:1px 8px}
 .prose table.ev{width:100%;border-collapse:collapse;margin:.5rem 0 .75rem;font-size:.8125rem}
 .prose table.ev th{text-align:left;font-size:.6875rem;letter-spacing:.08em;color:var(--k-muted);font-weight:600;padding:.5rem .625rem;border-bottom:1px solid var(--k-line-2)}
 .prose table.ev td{padding:.5rem .625rem;border-bottom:1px solid var(--k-line);color:var(--k-ink-2);font-variant-numeric:tabular-nums}
@@ -596,7 +596,7 @@ const CANNED={
 <tr><td>California Physicians Service (Blue Shield CA)</td><td>$14.93M</td><td>$24.31M</td><td>+$9.38M</td></tr>
 </tbody></table>
 <p>Data-quality notes: October’s completeness against September is unknown, and the latest-remit flag is computed as of today, so each month reflects claims whose current latest version falls in it.</p>`,
-  conf:{tier:'assisted',pct:35,why:'Answers a broader question than asked: 129 / N770, drugs and submission dates are not in the data Kinetic can access. Figures cover all denial reasons.'},
+  conf:{tier:'partial',pct:35,why:'Below the acceptable threshold. Answers a broader question than asked: 129 / N770, drugs and submission dates are not in the data Kinetic can access. Figures cover all denial reasons.'},
   tiles:[['Total denied, Oct (all reasons)','$95.43M'],['129 / N770 isolated','Not available']],
   sources:[
    {n:1,q:'835 Total Denied v1 by payer · 2026-09, 2026-10',label:'835 claim view',kind:'Governed measure',tier:'governed',src:'Denials Analytics · 835 Claim View, Total Denied',ttl:'Total Denied by Payer, Sep and Oct 2026',cell:'Rows <code>Top 3 payers</code> × columns <code>2026-09</code>, <code>2026-10</code>',filters:[['Remit','Latest version'],['Remit month','2026-09, 2026-10'],['Denial reason','All (CARC/RARC not available)'],['Facility','All']],val:'$30.63M → $95.43M',asof:'Refreshed 11/16/2026'}
@@ -651,7 +651,8 @@ function pageCtx(){return({library:'Analytical library · All items',cerebrum:'C
 const TIERS={
  certified:{name:'Certified',icon:'badge-check',range:'100%',desc:'Certified metrics with an owner and a definition authority.'},
  governed:{name:'Governed',icon:'shield',range:'70-99%',desc:'Built from governed measures, with a derived or unreviewed step.'},
- assisted:{name:'Assisted',icon:'sparkles',range:'Below 70%',desc:'Kinetic filled gaps with uploaded data or its own assumptions.'}
+ assisted:{name:'Assisted',icon:'sparkles',range:'40-69%',desc:'Kinetic filled gaps with uploaded data or its own assumptions.'},
+ partial:{name:'Partial data',icon:'circle-alert',range:'Below 40%',desc:'Below the acceptable threshold: Kinetic can’t access data the question needs, so the answer covers only part of it.'}
 };
 const FB={
  up:{q:'What did you like about this response? (optional)',o:['Up to date','Accurate','Helpful','Followed instructions','Good sources']},
