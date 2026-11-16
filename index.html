@@ -394,6 +394,19 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .srcgrp{font-size:.75rem;color:var(--k-muted);margin:.875rem .75rem .25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .srcitem{display:block;width:100%;text-align:left;border-radius:.625rem;padding:.75rem;border:1px solid transparent}
 .srcitem:hover{background:var(--k-surface)}
+.srcsum{margin:.5rem .75rem .25rem;padding:.875rem;border:1px solid var(--k-line);border-radius:.625rem;background:var(--k-surface)}
+.srcbar{display:flex;gap:3px;height:.5rem}
+.srcbar button{flex:1;height:100%;border-radius:2px;background:var(--t);opacity:.8;padding:0}
+.srcbar button:first-child{border-radius:999px 2px 2px 999px}
+.srcbar button:last-child{border-radius:2px 999px 999px 2px}
+.srcbar button:only-child{border-radius:999px}
+.srcbar button:hover,.srcbar button:focus-visible,.srcbar button.on{opacity:1;outline:none;box-shadow:0 0 0 2px var(--k-surface),0 0 0 3px var(--t)}
+.srcleg{display:flex;flex-wrap:wrap;gap:.25rem .875rem;margin-top:.625rem;font-size:.75rem;color:var(--k-ink-2)}
+.srcleg span{display:inline-flex;align-items:center;gap:.375rem}
+.srcleg i{width:.5rem;height:.5rem;border-radius:50%;background:var(--t)}
+.srcans{margin-top:.5rem;padding-top:.5rem;border-top:1px solid var(--k-line);font-size:.75rem;color:var(--k-muted)}
+.srcans b{color:var(--t);font-weight:600}
+.srcitem.hl{background:var(--k-surface);border-color:var(--k-line-2)}
 .srcitem.focus{background:var(--k-surface);border-color:var(--k-line-2)}
 .srcitem .from{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--k-muted);min-width:0}
 .srcitem .from i .k-i{width:.5625rem;height:.5625rem}
@@ -614,6 +627,16 @@ function msgActsHTML(m,mi){
     ${src.length?`<button class="srcpill${open?' on':''}" data-sources="1"><span class="srcstack">${tiers.map(t=>`<i class="tier-${t}">${ic(TIERS[t].icon)}</i>`).join('')}</span>${src.length} sources</button>`:''}
   </div>`;
 }
+function srcSumHTML(a,focus){
+  const src=a.sources||[];if(!src.length)return '';
+  const counts=Object.keys(TIERS).map(k=>[k,src.filter(s=>s.tier===k).length]).filter(x=>x[1]);
+  const t=a.conf&&TIERS[a.conf.tier];
+  return `<div class="srcsum">
+    <div class="srcbar" role="group" aria-label="Sources by confidence level">${src.map(s=>`<button class="tier-${s.tier}${focus==s.n?' on':''}" data-srcfocus="${s.n}" title="${esc(s.ttl)} · ${TIERS[s.tier].name}" aria-label="${esc(s.ttl)}, ${TIERS[s.tier].name}"></button>`).join('')}</div>
+    <div class="srcleg">${counts.map(([k,n])=>`<span class="tier-${k}"><i></i>${n} ${TIERS[k].name}</span>`).join('')}</div>
+    ${t?`<div class="srcans tier-${a.conf.tier}">Answer confidence: <b>${t.name} · ${a.conf.pct}%</b>, set by its lowest-level source</div>`:''}
+  </div>`;
+}
 function sourcesHTML(){
   const c=S.canvas,a=c.answer,groups=[];
   (a.sources||[]).forEach(s=>{let g=groups.find(x=>x.q===s.q);if(!g)groups.push(g={q:s.q,items:[]});g.items.push(s)});
@@ -621,6 +644,7 @@ function sourcesHTML(){
     <div class="cvhead"><span class="cvicon">${ic('table')}</span><b>Sources</b><span class="cvcount">${a.sources.length}</span><span class="spacer"></span>
       <button class="k-iconbtn" id="cvClose" title="Close" aria-label="Close">${ic('x')}</button></div>
     <div class="k-scroll" id="srcScroll"><div class="srclist">
+      ${srcSumHTML(a,c.focus)}
       ${groups.map(g=>`<div class="srcgrp">Results for “${esc(g.q)}”</div>${g.items.map(s=>{const t=TIERS[s.tier];return `<button class="srcitem tier-${s.tier}${c.focus==s.n?' focus':''}" id="src-${s.n}" data-act="Opens ${esc(s.src.split(' · ').pop())} with this cell highlighted. Mocked in this prototype">
         <span class="from"><i>${ic(t.icon)}</i><span class="nm">${esc(s.src)}</span><span class="tierchip">${t.name}</span></span>
         <span class="ttl">${esc(s.ttl)}${ic('external-link')}</span>
@@ -1025,6 +1049,11 @@ function submitFb(mi){
   const m=S.thread[mi];if(m)m.fbText=v;
   S.fbOpen=null;S.fbWrite=false;S.keepScroll=true;render();toast('Thanks for the feedback');
 }
+document.addEventListener('mouseover',e=>{
+  const seg=e.target.closest&&e.target.closest('.srcbar [data-srcfocus]');
+  document.querySelectorAll('.srcitem.hl').forEach(x=>x.classList.remove('hl'));
+  if(seg){const it=el('src-'+seg.dataset.srcfocus);if(it)it.classList.add('hl')}
+});
 document.addEventListener('input',e=>{if(e.target.classList&&e.target.classList.contains('fbtext')){const s=e.target.closest('.fbpop').querySelector('[data-fbsubmit]');if(s)s.disabled=!e.target.value.trim()}});
 
 /* ============ events ============ */
@@ -1040,6 +1069,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.fbsubmit){submitFb(+b.dataset.fbsubmit);return}
   if(b.dataset.fbclose){S.fbOpen=null;S.keepScroll=true;render();return}
   if(b.dataset.fbopt){const [mi,r]=b.dataset.fbopt.split('|');const m=S.thread[+mi];if(m)m.fbReason=r;S.fbOpen=null;S.keepScroll=true;render();toast('Thanks for the feedback');return}
+  if(b.dataset.srcfocus){const n=+b.dataset.srcfocus;if(S.canvas)S.canvas.focus=n;S.keepScroll=true;render();requestAnimationFrame(()=>{const f=el('src-'+n);if(f)f.scrollIntoView({block:'nearest',behavior:'smooth'})});return}
   if(b.dataset.cite||b.dataset.sources){
     const host=b.closest('[data-mi]');const a=host?(S.thread[+host.dataset.mi]||{}).answer:(S.canvas&&S.canvas.answer);if(!a)return;
     const focus=b.dataset.cite?+b.dataset.cite:null;
