@@ -285,6 +285,10 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .skh{font-size:.8125rem;font-weight:600;color:var(--k-ink-2);margin:1rem 0 .25rem;padding-top:.875rem;border-top:1px solid var(--k-line)}
 .skboxes{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.625rem 0}
 .skboxes i{height:84px;border-radius:.5rem;background:var(--k-raised)}
+/* diagonal shimmer on run placeholders: viewport-anchored so one band sweeps across all blocks; phase pinned to the clock (--shd) so 250ms re-renders don't restart it */
+.runcard .sk,.runcard .skboxes i{background-color:var(--k-raised);background-image:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.07) 50%,transparent 60%);background-size:200vw 100vh;background-attachment:fixed;background-repeat:no-repeat;animation:skshimmer 1.8s linear infinite;animation-delay:var(--shd,0ms)}
+@keyframes skshimmer{from{background-position:-150vw 0}to{background-position:50vw 0}}
+@media (prefers-reduced-motion:reduce){.runcard .sk,.runcard .skboxes i{animation:none;background-image:none}}
 .anscard{border:1px solid var(--k-line-2);border-radius:var(--k-r);background:var(--k-surface);overflow:hidden;margin:.375rem 0 .75rem}
 .ansbody{padding:1rem 1.25rem .75rem}
 .prose .ansh{display:flex;align-items:center;gap:.5rem;font-size:1rem;font-weight:600;color:var(--k-ink);margin:1.25rem 0 .75rem}
@@ -679,7 +683,7 @@ function runHTML(m){
     <div class="skh">Understood</div><div class="sk" style="width:62%"></div><div class="sk" style="width:84%"></div><div class="sk" style="width:71%"></div>
     <div class="skh">Evidence</div><div class="skboxes"><i></i><i></i><i></i></div><div class="sk"></div><div class="sk" style="width:78%"></div>
     <div class="skh">Finding</div><div class="sk" style="width:80%"></div><div class="sk" style="width:82%"></div><div class="sk" style="width:58%"></div>`;
-  return `<div class="runcard"><div class="runhead"><span class="kmark">K</span>${header}<span class="time">${t}</span></div>${bar}${line}${steps}${skel}</div>`;
+  return `<div class="runcard" style="--shd:-${Date.now()%1800}ms"><div class="runhead"><span class="kmark">K</span>${header}<span class="time">${t}</span></div>${bar}${line}${steps}${skel}</div>`;
 }
 function focusComposer(){
   const root=S.panelOpen?document.getElementById('panel'):document.getElementById('page');
