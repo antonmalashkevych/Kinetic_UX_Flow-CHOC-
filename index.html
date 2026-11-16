@@ -436,6 +436,10 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .srcitem:hover .ttl,.srcitem:hover .ttl .k-i{color:var(--k-accent-ink)}
 .srcitem .cell,.srcitem .valrow{display:block;margin-left:1.625rem;font-size:.8125rem;color:var(--k-ink-2);line-height:1.5}
 .srcitem .valrow{color:var(--k-muted);margin-top:.125rem}
+.srcitem .filts{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem;margin:.3125rem 0 .25rem 1.625rem;font-size:.75rem;color:var(--k-ink-2)}
+.srcitem .filts .fl{color:var(--k-muted);margin-right:.125rem}
+.srcitem .filts code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--k-raised);padding:1px 6px;border-radius:4px;color:var(--k-ink);white-space:nowrap}
+.srcitem .filts code span{color:var(--k-muted)}
 .srcitem .val{color:var(--k-ink);font-weight:600;font-variant-numeric:tabular-nums}
 
 /* panel chrome */
@@ -550,9 +554,9 @@ const CANNED={
   conf:{tier:'certified',pct:100,why:'Every figure comes from certified measures in the Denials mart, each with an owner and a definition authority.'},
   tiles:[['Denied amount','$4.21M'],['Change vs prior month','+6.4%']],
   sources:[
-   {n:1,q:'Denied Amount v1 by payer · 2026-09',label:'denials mart',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denied Dollars by Payer',ttl:'Denied Amount by Payer, month close 2026-09',cell:'Column <code>Denied Amount</code> × rows <code>Total</code>, <code>Payer A</code>, <code>Payer B</code>',val:'$4.21M · $1.48M · $0.94M',asof:'Month close 10/05/2026'},
-   {n:2,q:'Denied Amount v1 by payer · 2026-09',label:'denial reasons',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denials by Reason Code',ttl:'Payer C · CARC 50 (medical necessity)',cell:'Row <code>Payer C</code> × column <code>CARC 50</code>, service line <code>Sleep studies</code>',val:'$0.58M',asof:'Month close 10/05/2026'},
-   {n:3,q:'Open claims under changed payer rules',label:'payer policy log',kind:'Policy rule',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',asof:'Refreshed 10/22/2026'}
+   {n:1,q:'Denied Amount v1 by payer · 2026-09',label:'denials mart',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denied Dollars by Payer',ttl:'Denied Amount by Payer, month close 2026-09',cell:'Column <code>Denied Amount</code> × rows <code>Total</code>, <code>Payer A</code>, <code>Payer B</code>',val:'$4.21M · $1.48M · $0.94M',filters:[['Posting month','2026-09'],['Denial type','Initial'],['Excludes','Reversed denials'],['Payer','All (12)'],['Facility','All']],asof:'Month close 10/05/2026'},
+   {n:2,q:'Denied Amount v1 by payer · 2026-09',label:'denial reasons',kind:'Governed measure',tier:'certified',src:'Denials Analytics · Denials by Reason Code',ttl:'Payer C · CARC 50 (medical necessity)',cell:'Row <code>Payer C</code> × column <code>CARC 50</code>',val:'$0.58M',filters:[['Posting month','2026-09'],['Payer','Payer C'],['CARC','50'],['Service line','Sleep studies'],['Facility','All']],asof:'Month close 10/05/2026'},
+   {n:3,q:'Open claims under changed payer rules',label:'payer policy log',kind:'Policy rule',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',filters:[['Payer','Payer A'],['Service line','Advanced imaging'],['Claim status','Open'],['Scheduled under','Rule before 2026-09-01']],asof:'Refreshed 10/22/2026'}
   ],
   fups:[{t:'Show the 312 affected claims by facility'},{t:'Trend denial rate by month, last 12 months'},{t:'Schedule this as a weekly Monday digest',act:true}]
  },
@@ -566,9 +570,9 @@ const CANNED={
   conf:{tier:'assisted',pct:62,why:'Cash is certified, but the goal comes from an uploaded workbook and the proration is Kinetic\'s own assumption. Verify before sharing.'},
   tiles:[['Cash collected MTD','$18.42M'],['Percent of MTD goal','87.5%']],
   sources:[
-   {n:1,q:'Cash Collected MTD v1 · 2026-11',label:'daily cash',kind:'Governed measure',tier:'certified',src:'Cash Management · Daily Cash Posting',ttl:'Cash Collected MTD, all facilities',cell:'Row <code>All facilities</code> × column <code>MTD Cash</code>, posted through 11/15/2026',val:'$18,421,906.40',asof:'Refreshed 11/16/2026'},
-   {n:2,q:'Cash goal · November 2026',label:'budget upload',kind:'Uploaded value',tier:'assisted',src:'Uploaded file · FY27_Cash_Goals.xlsx',ttl:'Sheet “Monthly goals”, cell D14',cell:'Row <code>November 2026</code> × column <code>Cash Goal</code>, not certified',val:'$42,100,000.00',asof:'Uploaded by Finance 10/03/2026'},
-   {n:3,q:'Cash goal · November 2026',label:'kinetic assumption',kind:'Derived value',tier:'assisted',src:'Kinetic · Derived value',ttl:'Prorated month-to-date goal',cell:'Calendar-day proration, <code>15 of 30 days</code>',val:'$21,050,000.00',asof:'Computed for this answer'}
+   {n:1,q:'Cash Collected MTD v1 · 2026-11',label:'daily cash',kind:'Governed measure',tier:'certified',src:'Cash Management · Daily Cash Posting',ttl:'Cash Collected MTD, all facilities',cell:'Row <code>All facilities</code> × column <code>MTD Cash</code>, posted through 11/15/2026',val:'$18,421,906.40',filters:[['Posting date','11/01-11/15/2026'],['Cash type','Payer + patient'],['Excludes','Refunds, transfers'],['Facility','All']],asof:'Refreshed 11/16/2026'},
+   {n:2,q:'Cash goal · November 2026',label:'budget upload',kind:'Uploaded value',tier:'assisted',src:'Uploaded file · FY27_Cash_Goals.xlsx',ttl:'Sheet “Monthly goals”, cell D14',cell:'Row <code>November 2026</code> × column <code>Cash Goal</code>',val:'$42,100,000.00',filters:[['Month','November 2026'],['Entity','CHOC consolidated'],['Version','As uploaded, not certified']],asof:'Uploaded by Finance 10/03/2026'},
+   {n:3,q:'Cash goal · November 2026',label:'kinetic assumption',kind:'Derived value',tier:'assisted',src:'Kinetic · Derived value',ttl:'Prorated month-to-date goal',cell:'Monthly goal × days elapsed ÷ days in month',val:'$21,050,000.00',filters:[['Days elapsed','15 of 30'],['Method','Calendar-day proration']],asof:'Computed for this answer'}
   ],
   fups:[{t:'Break the gap down by facility'},{t:'Show daily cash against a straight-line goal'},{t:'Ask Finance to certify the goal workbook',act:true}]
  },
@@ -585,9 +589,9 @@ const CANNED={
   conf:{tier:'governed',pct:88,why:'Both operands are certified measures. The 15.64% share is derived from them and has no certified definition of its own.'},
   tiles:[['Accounts AR 90+','$103.7M'],['Share of total A/R','15.64%']],
   sources:[
-   {n:1,q:'Accounts AR 90+ v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts AR 90+, all facilities',cell:'Row <code>All facilities</code> × column <code>AR 90+</code>',val:'$103,746,373.86',asof:'Snapshot 10/22/2026'},
-   {n:2,q:'Accounts Total Current Balance v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts Total Current Balance, all facilities',cell:'Row <code>All facilities</code> × column <code>Total A/R</code>',val:'$663,353,084.96',asof:'Snapshot 10/22/2026'},
-   {n:3,q:'Accounts Total Current Balance v1 · 2026-10',label:'facility rollup',kind:'Filter set',tier:'governed',src:'Receivables · Facility A/R Rollup',ttl:'Accounts in scope after filters',cell:'Filters <code>Real patients only</code>, <code>Balance ≠ 0</code>, <code>Current snapshot</code>',val:'48,212 accounts',asof:'Snapshot 10/22/2026'}
+   {n:1,q:'Accounts AR 90+ v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts AR 90+, all facilities',cell:'Row <code>All facilities</code> × column <code>AR 90+</code>',val:'$103,746,373.86',filters:[['Period','2026-10'],['Snapshot','Current, 10/22/2026'],['Patients','Real only, excl. test/synthetic'],['Balance','≠ 0'],['Facility','All']],asof:'Snapshot 10/22/2026'},
+   {n:2,q:'Accounts Total Current Balance v1 · 2026-10',label:'a/r aging',kind:'Governed measure',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts Total Current Balance, all facilities',cell:'Row <code>All facilities</code> × column <code>Total A/R</code>',val:'$663,353,084.96',filters:[['Period','2026-10'],['Snapshot','Current, 10/22/2026'],['Patients','Real only, excl. test/synthetic'],['Balance','≠ 0'],['Facility','All']],asof:'Snapshot 10/22/2026'},
+   {n:3,q:'Accounts Total Current Balance v1 · 2026-10',label:'facility rollup',kind:'Filter set',tier:'governed',src:'Receivables · Facility A/R Rollup',ttl:'Accounts in scope after filters',cell:'Row <code>All facilities</code> × column <code>Accounts</code>',val:'48,212 accounts',filters:[['Snapshot','Current, 10/22/2026'],['Patients','Real only, excl. test/synthetic'],['Balance','≠ 0'],['Facility','All']],asof:'Snapshot 10/22/2026'}
   ],
   fups:[{t:'Break this down by facility'},{t:'Compare to the same month last year'},{t:'Pin this to the Analytical library',act:true}]
  }
@@ -739,6 +743,7 @@ function sourcesHTML(){
         <span class="from"><i>${ic(t.icon)}</i><span class="nm">${esc(s.src)}</span><span class="tierchip">${t.name}</span></span>
         <span class="ttl">${esc(s.ttl)}${ic('external-link')}</span>
         <span class="cell">${s.cell}</span>
+        ${s.filters&&s.filters.length?`<span class="filts"><span class="fl">Filters</span>${s.filters.map(f=>`<code><span>${esc(f[0])}:</span> ${esc(f[1])}</code>`).join('')}</span>`:''}
         <span class="valrow"><span class="val">${esc(s.val)}</span> · ${esc(s.asof)}</span>
       </button>`}).join('')}`).join('')}
       <p class="cvq" style="padding:0 .75rem">Each source points to the exact report cell Kinetic read. Opening one shows the report with that cell highlighted.</p>
