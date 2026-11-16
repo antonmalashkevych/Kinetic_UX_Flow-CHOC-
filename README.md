@@ -20,4 +20,6 @@ Open `index.html` in a browser. Single self-contained file, no build step, no ne
 
 `ana-unified-chat.html` is the same file; `index.html` is kept as the entry point for GitHub Pages style hosting.
 
+- Data-access gaps stated first: when Kinetic can't read data the question needs (for example CARC/RARC 129 / N770, drugs, submission dates), the answer opens with an amber notice naming what is not accessible, offers Request data access / Attach screenshot or file / Paste data, and labels anything below as partial context (try the "Denial Reason Drill-down" starter prompt)
+
 All data is mocked. Answers are canned (A/R over 90 days and denied-dollars scenarios). No PHI; figures are synthetic aggregates.

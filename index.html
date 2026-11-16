@@ -442,6 +442,23 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .srcitem .filts code span{color:var(--k-muted)}
 .srcitem .val{color:var(--k-ink);font-weight:600;font-variant-numeric:tabular-nums}
 
+/* data-access gap notice: always the first thing in an answer when Kinetic can't read what the question needs */
+.gapnote{border:1px solid color-mix(in srgb,var(--k-warn) 55%,transparent);border-left:3px solid var(--k-warn);background:color-mix(in srgb,var(--k-warn) 9%,var(--k-surface));border-radius:.5rem;padding:.875rem 1rem;margin:0 0 1rem}
+.gapnote .gh{display:flex;align-items:flex-start;gap:.5rem;font-size:.9375rem;font-weight:600;color:var(--k-ink);line-height:1.4}
+.gapnote .gh .k-i{width:1.125rem;height:1.125rem;color:var(--k-warn);flex:none;margin-top:.0625rem}
+.gapnote p{margin:.375rem 0 0 1.625rem;font-size:.875rem;line-height:1.6;color:var(--k-ink-2)}
+.gapnote .gmiss{display:flex;flex-wrap:wrap;align-items:center;gap:.3125rem;margin:.625rem 0 0 1.625rem;font-size:.75rem;color:var(--k-muted)}
+.gapnote .gmiss code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;padding:1px 6px;border-radius:4px;color:var(--k-ink);background:var(--k-raised);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--k-warn) 70%,transparent)}
+.gapnote .gacts{display:flex;flex-wrap:wrap;gap:.5rem;margin:.75rem 0 0 1.625rem}
+.gapnote .gacts .k-btn{height:1.875rem;font-size:.75rem}
+.prose .ctxh{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;font-size:1rem;font-weight:600;color:var(--k-ink);margin:.25rem 0 .5rem}
+.prose .ctxh .tag{font-size:.6875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--k-warn);border:1px solid color-mix(in srgb,var(--k-warn) 50%,transparent);border-radius:999px;padding:1px 8px}
+.prose table.ev{width:100%;border-collapse:collapse;margin:.5rem 0 .75rem;font-size:.8125rem}
+.prose table.ev th{text-align:left;font-size:.6875rem;letter-spacing:.08em;color:var(--k-muted);font-weight:600;padding:.5rem .625rem;border-bottom:1px solid var(--k-line-2)}
+.prose table.ev td{padding:.5rem .625rem;border-bottom:1px solid var(--k-line);color:var(--k-ink-2);font-variant-numeric:tabular-nums}
+.prose table.ev td:first-child{color:var(--k-ink)}
+.prose table.ev th:not(:first-child),.prose table.ev td:not(:first-child){text-align:right}
+
 /* panel chrome */
 .panelhead{display:flex;align-items:center;gap:.5rem;height:3.5rem;padding:0 .75rem;border-bottom:1px solid var(--k-line);box-shadow:0 1px 0 var(--k-line-2);flex:none}
 .panelhead .k-i{color:var(--k-accent-ink)}
@@ -515,6 +532,10 @@ const IC={
  'external-link':'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>',
  'table':'<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
  'arrow-left':'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+ 'circle-alert':'<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
+ 'paperclip':'<path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+ 'key':'<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>',
+ 'clipboard':'<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>',
  'square':'<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none"/>'
 };
 function ic(name,cls){return `<svg class="k-i${cls?' '+cls:''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[name]||''}</svg>`}
@@ -537,7 +558,8 @@ const PROMPTS=[
  {q:'What was the total denied amount last month, by payer?',t:'Denied Dollars by Payer'},
  {q:'How does month-to-date cash compare to the MTD goal?',t:'MTD Cash vs Goal'},
  {q:'Build a payer scorecard for the top 10 payers: current A/R, denial rate, and month-to-date cash.',t:'Top Payer Scorecard'},
- {q:'What is the late charge amount and late charges as a percent of total charges, by charge department, for the last full month?',t:'Late Charges by Department'}
+ {q:'What is the late charge amount and late charges as a percent of total charges, by charge department, for the last full month?',t:'Late Charges by Department'},
+ {q:'For 129 / N770, which payers, drugs and facilities drove October’s increase? Did it begin around a common submission date?',t:'Denial Reason Drill-down'}
 ];
 
 const CANNED={
@@ -559,6 +581,27 @@ const CANNED={
    {n:3,q:'Open claims under changed payer rules',label:'payer policy log',kind:'Policy rule',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',filters:[['Payer','Payer A'],['Service line','Advanced imaging'],['Claim status','Open'],['Scheduled under','Rule before 2026-09-01']],asof:'Refreshed 10/22/2026'}
   ],
   fups:[{t:'Show the 312 affected claims by facility'},{t:'Trend denial rate by month, last 12 months'},{t:'Schedule this as a weekly Monday digest',act:true}]
+ },
+ gap:{
+  arch:'Compare metric',metrics:'835 Total Denied v1',period:'2026-10 vs 2026-09',ttl:'129 / N770 drivers, October vs September',
+  gap:{title:'I can’t access the data needed to answer this for 129 / N770.',
+   body:'The 835 claim view I can read has no CARC or RARC field and no drug or submission-date breakdown, so I can’t isolate 129 / N770, name the drugs or facilities behind it, or test for a common submission date. I haven’t estimated any of it.',
+   missing:['CARC + RARC pair','Drug (NDC / HCPCS)','Facility for this pair','Submission date'],
+   ask:'To answer properly, give me one of these. Until then, below is partial context only.'},
+  html:`<div class="ctxh">Partial context: all denied dollars by payer <span class="tag">Not 129 / N770</span></div>
+<p>These are the largest drivers of <b>total</b> denied dollars from the 835 claim view, all denial reasons combined. They are not evidence of what drives 129 / N770.<span class="cite">1</span></p>
+<table class="ev"><thead><tr><th>Payer</th><th>Sep 2026</th><th>Oct 2026</th><th>Change</th></tr></thead><tbody>
+<tr><td>State of California - DHCS</td><td>$4.04M</td><td>$35.86M</td><td>+$31.82M</td></tr>
+<tr><td>Blue Cross of California (CA)</td><td>$11.66M</td><td>$35.26M</td><td>+$23.60M</td></tr>
+<tr><td>California Physicians Service (Blue Shield CA)</td><td>$14.93M</td><td>$24.31M</td><td>+$9.38M</td></tr>
+</tbody></table>
+<p>Data-quality notes: October’s completeness against September is unknown, and the latest-remit flag is computed as of today, so each month reflects claims whose current latest version falls in it.</p>`,
+  conf:{tier:'assisted',pct:35,why:'Answers a broader question than asked: 129 / N770, drugs and submission dates are not in the data Kinetic can access. Figures cover all denial reasons.'},
+  tiles:[['Total denied, Oct (all reasons)','$95.43M'],['129 / N770 isolated','Not available']],
+  sources:[
+   {n:1,q:'835 Total Denied v1 by payer · 2026-09, 2026-10',label:'835 claim view',kind:'Governed measure',tier:'governed',src:'Denials Analytics · 835 Claim View, Total Denied',ttl:'Total Denied by Payer, Sep and Oct 2026',cell:'Rows <code>Top 3 payers</code> × columns <code>2026-09</code>, <code>2026-10</code>',filters:[['Remit','Latest version'],['Remit month','2026-09, 2026-10'],['Denial reason','All (CARC/RARC not available)'],['Facility','All']],val:'$30.63M → $95.43M',asof:'Refreshed 11/16/2026'}
+  ],
+  fups:[{t:'Show 129 / N770 from adjustments data instead'},{t:'Break total denials down by facility'},{t:'Request access to CARC/RARC claim lines',act:true}]
  },
  cash:{
   arch:'Compare a measure to a target',metrics:'Cash Collected MTD v1, Cash Goal (uploaded)',period:'2026-11 MTD',ttl:'Month-to-date cash vs goal',
@@ -624,6 +667,18 @@ function confHTML(a){
         <span style="display:block">${esc(a.conf.why)}</span>
         <span class="scale">${Object.entries(TIERS).map(([k,v])=>`<span class="lv tier-${k}${k===a.conf.tier?' on':''}"><i></i><span>${v.name}</span><span class="r">${v.range}</span></span>`).join('')}</span>
       </span></span></span>`;
+}
+function gapHTML(a){
+  const g=a.gap;if(!g)return '';
+  return `<div class="gapnote" role="note"><div class="gh">${ic('circle-alert')}<span>${esc(g.title)}</span></div>
+    <p>${esc(g.body)}</p>
+    <div class="gmiss"><span>Not accessible:</span>${g.missing.map(m=>`<code>${esc(m)}</code>`).join('')}</div>
+    <p>${esc(g.ask)}</p>
+    <div class="gacts">
+      <button class="k-btn" data-act="Access request sent to your Kinetic admin. Mocked in this prototype">${ic('key')}Request data access</button>
+      <button class="k-btn" data-act="Attach a screenshot or export. Mocked in this prototype">${ic('paperclip')}Attach screenshot or file</button>
+      <button class="k-btn" data-gappaste="1">${ic('clipboard')}Paste data</button>
+    </div></div>`;
 }
 function citeHTML(a,html){
   return html.replace(/<span class="cite">(\d+)<\/span>/g,(_,n)=>{
@@ -727,7 +782,7 @@ function srcSumHTML(a,focus){
   return `<div class="srcsum">
     <div class="srcbar" role="group" aria-label="Sources by confidence level">${src.map(s=>`<button class="tier-${s.tier}${focus==s.n?' on':''}" data-srcfocus="${s.n}" title="${esc(s.ttl)} · ${TIERS[s.tier].name}" aria-label="${esc(s.ttl)}, ${TIERS[s.tier].name}"></button>`).join('')}</div>
     <div class="srcleg">${tierLegHTML(src)}<button class="k-btn trbtn" data-trace="open">${ic('brain')}Trace in Cerebrum</button></div>
-    ${t?`<div class="srcans tier-${a.conf.tier}">Answer confidence: <b>${t.name} · ${a.conf.pct}%</b>, set by its lowest-level source</div>`:''}
+    ${t?`<div class="srcans tier-${a.conf.tier}">Answer confidence: <b>${t.name} · ${a.conf.pct}%</b>, ${a.gap?'lower than its sources because the accessible data can’t fully answer the question':'set by its lowest-level source'}</div>`:''}
   </div>`;
 }
 function sourcesHTML(){
@@ -818,7 +873,7 @@ function msgHTML(m){
   return `<div class="msg-a" data-mi="${mi}">
     <div class="ahead"><img src="${LOGO}" alt=""><b>Kinetic</b>${confHTML(a)}</div>
     <div class="anscard">
-      <div class="ansbody"><div class="prose">${citeHTML(a,a.html)}</div>
+      <div class="ansbody">${gapHTML(a)}<div class="prose">${citeHTML(a,a.html)}</div>
         <button class="ansrow" data-act="Grounding layers are mocked in this prototype">${ic('chevron-right')}<span>Grounding</span><span class="right">5 layers</span></button>
         <button class="ansrow" data-act="Provenance is mocked in this prototype">${ic('chevron-right')}<span>Provenance · Output contract</span></button>
       </div>
@@ -984,7 +1039,7 @@ function canvasHTML(){
       <p class="cvq">Live tiles are mocked in this prototype. A saved dashboard collects in the Analytical library.</p>`
     :`<div style="font-size:.8125rem;font-weight:600;color:var(--k-ink-2);margin:.25rem 0">Finding</div>
       <h2 class="cvtitle">${esc(a.ttl)}</h2>
-      <div class="prose">${citeHTML(a,a.html)}</div>
+      ${gapHTML(a)}<div class="prose">${citeHTML(a,a.html)}</div>
       <p style="font-size:.875rem;color:var(--k-ink-2)">This analysis is grounded on: Business vocabulary, Metric standards, Semantic layer, Data policy, Analytic guardrails - the layers the grounding bundle carried for this run. No required layer was reported missing.</p>
       <div class="cvsec">Grounding&nbsp;<span style="color:var(--k-muted);font-weight:400;font-size:.8125rem">5 layers</span><span style="margin-left:auto">${ic('chevron-down')}</span></div>
       <div class="cvsec">Source data</div>
@@ -1105,7 +1160,7 @@ function send(text){
   if(!text||S.streaming)return;
   if(!S.thread.length)S.threadTitle=text.length>46?text.slice(0,44)+'…':text;
   S.thread.push({role:'user',text});
-  const ans=/deni|payer/i.test(text)?CANNED.denied:/cash|goal/i.test(text)?CANNED.cash:CANNED.generic;
+  const ans=/129|N770|CARC|RARC|drug/i.test(text)?CANNED.gap:/deni|payer/i.test(text)?CANNED.denied:/cash|goal/i.test(text)?CANNED.cash:CANNED.generic;
   const run={role:'run',cur:0,done:false,stopped:false,expanded:false,start:Date.now(),durs:[],q:text,arch:ans.arch,metrics:ans.metrics,period:ans.period};
   S.thread.push(run);
   S.streaming=true;
@@ -1165,6 +1220,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.fbsubmit){submitFb(+b.dataset.fbsubmit);return}
   if(b.dataset.fbclose){S.fbOpen=null;S.keepScroll=true;render();return}
   if(b.dataset.fbopt){const [mi,r]=b.dataset.fbopt.split('|');const m=S.thread[+mi];if(m)m.fbReason=r;S.fbOpen=null;S.keepScroll=true;render();toast('Thanks for the feedback');return}
+  if(b.dataset.gappaste){focusComposer();const r=S.panelOpen?el('panel'):el('page');const tas=r?r.querySelectorAll('.cinput'):[];const ta=tas[tas.length-1];if(ta){ta.placeholder='Paste the rows or table here (for example, a remit export for October) and press Enter';ta.focus()}return}
   if(b.dataset.trace){if(S.canvas){S.canvas.view=b.dataset.trace==='open'?'trace':'list';traceHover=null}S.keepScroll=true;render();return}
   if(b.dataset.srcfocus){const n=+b.dataset.srcfocus;if(S.canvas)S.canvas.focus=n;S.keepScroll=true;render();requestAnimationFrame(()=>{const f=el('src-'+n);if(f)f.scrollIntoView({block:'nearest',behavior:'smooth'})});return}
   if(b.dataset.cite||b.dataset.sources){
