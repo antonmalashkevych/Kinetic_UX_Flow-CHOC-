@@ -323,6 +323,75 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 #panel .chatfoot .inner{max-width:none}
 .groundnote{font-size:.6875rem;color:var(--k-muted);text-align:center;margin-top:.375rem}
 
+/* ===== answer trust layer: confidence, citations, sources, feedback ===== */
+.tier-certified{--t:var(--k-ok)} .tier-governed{--t:var(--k-info)} .tier-assisted{--t:var(--k-warn)}
+.anscard{overflow:visible}
+.anscard .ansfoot{border-radius:0 0 var(--k-r) var(--k-r)}
+.ahead .conf{margin-left:auto;display:inline-flex;align-items:center;gap:.375rem;font-size:.75rem;color:var(--k-muted)}
+.confpill{display:inline-flex;align-items:center;gap:.3125rem;height:1.375rem;padding:0 .5rem;border-radius:999px;border:1px solid color-mix(in srgb,var(--t) 45%,transparent);background:color-mix(in srgb,var(--t) 13%,transparent);color:var(--t);font-weight:600;font-size:.75rem}
+.confpill .k-i{width:.75rem;height:.75rem}
+.confhelp{position:relative;display:inline-grid;place-items:center;width:1.25rem;height:1.25rem;border-radius:50%;color:var(--k-muted);cursor:help;outline:none}
+.confhelp>.k-i{width:.875rem;height:.875rem}
+.confhelp:hover,.confhelp:focus-visible{color:var(--k-ink)}
+.confhelp:focus-visible{box-shadow:0 0 0 2px var(--k-accent)}
+.conftip{display:none;position:absolute;right:-.25rem;top:calc(100% + 6px);width:18rem;background:var(--k-raised);border:1px solid var(--k-line-2);border-radius:.625rem;box-shadow:var(--k-shadow-float);padding:.875rem;z-index:40;text-align:left;font-size:.75rem;color:var(--k-ink-2);line-height:1.5;font-weight:400;cursor:default}
+.confhelp:hover .conftip,.confhelp:focus .conftip{display:block}
+.conftip .ct-h{display:block;font-size:.6875rem;letter-spacing:.07em;text-transform:uppercase;color:var(--k-muted)}
+.conftip .ct-v{display:flex;align-items:baseline;gap:.5rem;margin:.125rem 0 .375rem}
+.conftip .pct{font-size:1.5rem;font-weight:600;color:var(--t);font-variant-numeric:tabular-nums}
+.conftip .ct-n{color:var(--k-ink);font-weight:600;font-size:.8125rem}
+.conftip .scale{display:grid;gap:.3125rem;margin-top:.75rem;padding-top:.625rem;border-top:1px solid var(--k-line-2)}
+.conftip .lv{display:flex;align-items:center;gap:.5rem;color:var(--k-muted)}
+.conftip .lv i{width:.5rem;height:.5rem;border-radius:50%;background:var(--t);flex:none}
+.conftip .lv.on{color:var(--k-ink);font-weight:600}
+.conftip .lv .r{margin-left:auto;font-variant-numeric:tabular-nums}
+.prose .cite{position:relative;display:inline-flex;align-items:center;height:18px;min-width:0;padding:0 6px;border-radius:5px;background:var(--k-raised);color:var(--k-ink-2);font-size:10.5px;font-weight:500;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;vertical-align:1px;margin-left:4px;cursor:pointer;line-height:1;white-space:nowrap}
+.prose .cite:hover,.prose .cite:focus-visible{background:var(--k-hover-neutral);color:var(--k-ink)}
+.citepop{display:none;position:absolute;left:0;bottom:calc(100% + 6px);width:18rem;background:var(--k-raised);border:1px solid var(--k-line-2);border-radius:.625rem;box-shadow:var(--k-shadow-float);padding:.75rem .875rem;z-index:30;font-family:var(--k-font);text-align:left;white-space:normal;line-height:1.45;cursor:pointer}
+.cite:hover .citepop,.cite:focus-visible .citepop{display:block}
+.citepop .cp-from{display:flex;align-items:center;gap:.375rem;font-size:11px;color:var(--k-muted)}
+.citepop .cp-from i{width:.5rem;height:.5rem;border-radius:50%;background:var(--t)}
+.citepop .cp-from .tn{margin-left:auto;color:var(--t);font-weight:600}
+.citepop .cp-ttl{display:block;font-size:12.5px;font-weight:600;color:var(--k-ink);margin:.25rem 0}
+.citepop .cp-cell{display:block;font-size:12px;color:var(--k-ink-2)}
+.cell code,.citepop code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--k-surface);padding:1px 5px;border-radius:4px;color:var(--k-ink)}
+.citepop .val{color:var(--k-ink);font-weight:600;font-variant-numeric:tabular-nums}
+.msgacts{display:flex;align-items:center;gap:.125rem;margin:-.25rem 0 .25rem;position:relative}
+.msgacts .k-iconbtn{width:1.875rem;height:1.875rem}
+.msgacts .k-iconbtn .k-i{width:1rem;height:1rem}
+.msgacts .k-iconbtn:hover{background:var(--k-hover-neutral);color:var(--k-ink)}
+.msgacts .k-iconbtn.on{color:var(--k-ink);background:var(--k-hover-neutral)}
+.msgacts .k-iconbtn.on .k-i{fill:currentColor}
+.srcpill{display:inline-flex;align-items:center;gap:.5rem;height:1.875rem;padding:0 .625rem 0 .375rem;border-radius:999px;margin-left:.375rem;font-size:.8125rem;color:var(--k-ink-2)}
+.srcpill:hover,.srcpill.on{background:var(--k-hover-neutral);color:var(--k-ink)}
+.srcstack{display:inline-flex}
+.srcstack i,.srcitem .from i{width:1.125rem;height:1.125rem;border-radius:50%;display:grid;place-items:center;background:var(--k-side);border:1.5px solid var(--t);color:var(--t);flex:none}
+.srcstack i{margin-left:-.375rem}
+.srcstack i:first-child{margin-left:0}
+.srcstack .k-i{width:.5625rem;height:.5625rem}
+.fbpop{position:absolute;left:0;bottom:calc(100% + 8px);width:min(21rem,100%);background:var(--k-raised);border:1px solid var(--k-line-2);border-radius:.75rem;box-shadow:var(--k-shadow-float);padding:1rem;z-index:35}
+.fbpop .hd{display:flex;align-items:flex-start;gap:.5rem;font-size:.8125rem;color:var(--k-ink-2);margin-bottom:.75rem}
+.fbpop .hd .k-iconbtn{margin-left:auto;width:1.5rem;height:1.5rem;margin-top:-.125rem}
+.fbopts{display:grid;gap:.5rem}
+.fbopt{display:block;width:100%;text-align:center;height:2.25rem;border:1px solid var(--k-line-2);border-radius:.5rem;font-size:.8125rem;color:var(--k-ink);background:var(--k-surface)}
+.fbopt:hover{border-color:var(--k-accent);background:var(--k-hover);color:var(--k-accent-ink)}
+.cvcount{font-size:.75rem;color:var(--k-muted);border:1px solid var(--k-line-2);border-radius:999px;padding:0 .4375rem;line-height:1.25rem}
+.srclist{padding:.5rem .75rem 2rem}
+.srcgrp{font-size:.75rem;color:var(--k-muted);margin:.875rem .75rem .25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srcitem{display:block;width:100%;text-align:left;border-radius:.625rem;padding:.75rem;border:1px solid transparent}
+.srcitem:hover{background:var(--k-surface)}
+.srcitem.focus{background:var(--k-surface);border-color:var(--k-line-2)}
+.srcitem .from{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--k-muted);min-width:0}
+.srcitem .from i .k-i{width:.5625rem;height:.5625rem}
+.srcitem .from .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.srcitem .tierchip{margin-left:auto;color:var(--t);font-size:.6875rem;font-weight:600;flex:none}
+.srcitem .ttl{display:flex;align-items:flex-start;gap:.375rem;font-size:.875rem;font-weight:600;color:var(--k-ink);margin:.375rem 0 .25rem 1.625rem;line-height:1.4}
+.srcitem .ttl .k-i{width:.75rem;height:.75rem;flex:none;margin-top:.2rem;color:var(--k-muted)}
+.srcitem:hover .ttl,.srcitem:hover .ttl .k-i{color:var(--k-accent-ink)}
+.srcitem .cell,.srcitem .valrow{display:block;margin-left:1.625rem;font-size:.8125rem;color:var(--k-ink-2);line-height:1.5}
+.srcitem .valrow{color:var(--k-muted);margin-top:.125rem}
+.srcitem .val{color:var(--k-ink);font-weight:600;font-variant-numeric:tabular-nums}
+
 /* panel chrome */
 .panelhead{display:flex;align-items:center;gap:.5rem;height:3.5rem;padding:0 .75rem;border-bottom:1px solid var(--k-line);box-shadow:0 1px 0 var(--k-line-2);flex:none}
 .panelhead .k-i{color:var(--k-accent-ink)}
@@ -390,6 +459,11 @@ const IC={
  'file-text':'<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
  'bell':'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
  'flag':'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+ 'badge-check':'<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>',
+ 'shield':'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+ 'sparkles':'<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>',
+ 'external-link':'<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3"/>',
+ 'table':'<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
  'square':'<rect x="6.5" y="6.5" width="11" height="11" rx="2" fill="currentColor" stroke="none"/>'
 };
 function ic(name,cls){return `<svg class="k-i${cls?' '+cls:''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[name]||''}</svg>`}
@@ -404,7 +478,7 @@ const S={
   streaming:false,
   returnPage:null,
   libSeg:'tree', libChip:'All', cereTab:'Kinetic graph', cereGroup:'Plane', agentsTab:'My agents', convChip:'All',
-  mode:'Auto', modeOpen:false, modeWhere:'main', canvas:null
+  mode:'Auto', modeOpen:false, modeWhere:'main', canvas:null, fbOpen:null, keepScroll:false
 };
 
 const PROMPTS=[
@@ -418,28 +492,56 @@ const PROMPTS=[
 const CANNED={
  denied:{
   arch:'Break a measure down by payer',metrics:'Denied Amount v1',period:'2026-09',ttl:'Denied dollars, by payer',
-  html:`<p>Total denials posted last month came to <b>$4.21M</b> across 12 payers, up <b>6.4%</b> from the prior month. Three payers account for 71% of the dollars.</p>
+  html:`<p>Total denials posted last month came to <b>$4.21M</b> across 12 payers, up <b>6.4%</b> from the prior month. Three payers account for 71% of the dollars.<span class="cite">1</span></p>
 <h3 class="ansh">Breakdown by payer</h3>
 <ul>
 <li><b>Payer A - $1.48M</b> (35%), driven by CO-197 prior-auth denials on advanced imaging.<span class="cite">1</span></li>
 <li><b>Payer B - $0.94M</b> (22%), mostly CO-97 bundling edits, flat month over month.<span class="cite">1</span></li>
 <li><b>Payer C - $0.58M</b> (14%), new medical-necessity denials on sleep studies.<span class="cite">2</span></li>
 </ul>
-<p>The Payer A spike matches a prior-auth policy change effective the 1st - 312 open claims are still scheduled against the old rule.<span class="cite">2</span></p>`,
-  sources:[{n:1,t:'Denials mart · month close'},{n:2,t:'Payer policy log'}],
+<p>The Payer A spike matches a prior-auth policy change effective the 1st - 312 open claims are still scheduled against the old rule.<span class="cite">3</span></p>`,
+  conf:{tier:'certified',pct:100,why:'Every figure comes from certified measures in the Denials mart, each with an owner and a definition authority.'},
+  tiles:[['Denied amount','$4.21M'],['Change vs prior month','+6.4%']],
+  sources:[
+   {n:1,q:'Denied Amount v1 by payer · 2026-09',label:'denials mart',tier:'certified',src:'Denials Analytics · Denied Dollars by Payer',ttl:'Denied Amount by Payer, month close 2026-09',cell:'Column <code>Denied Amount</code> × rows <code>Total</code>, <code>Payer A</code>, <code>Payer B</code>',val:'$4.21M · $1.48M · $0.94M',asof:'Month close 10/05/2026'},
+   {n:2,q:'Denied Amount v1 by payer · 2026-09',label:'denial reasons',tier:'certified',src:'Denials Analytics · Denials by Reason Code',ttl:'Payer C · CARC 50 (medical necessity)',cell:'Row <code>Payer C</code> × column <code>CARC 50</code>, service line <code>Sleep studies</code>',val:'$0.58M',asof:'Month close 10/05/2026'},
+   {n:3,q:'Open claims under changed payer rules',label:'payer policy log',tier:'certified',src:'Policy Pulse · Payer Policy Change Log',ttl:'Payer A · Prior-auth rule change, effective 2026-09-01',cell:'Row <code>Payer A / Advanced imaging</code> × column <code>Open claims on prior rule</code>',val:'312 claims',asof:'Refreshed 10/22/2026'}
+  ],
   fups:[{t:'Show the 312 affected claims by facility'},{t:'Trend denial rate by month, last 12 months'},{t:'Schedule this as a weekly Monday digest',act:true}]
+ },
+ cash:{
+  arch:'Compare a measure to a target',metrics:'Cash Collected MTD v1, Cash Goal (uploaded)',period:'2026-11 MTD',ttl:'Month-to-date cash vs goal',
+  html:`<p>Month-to-date cash through November 15 is <b>$18.42M</b><span class="cite">1</span>, against a month-to-date goal of <b>$21.05M</b><span class="cite">3</span>. That is <b>87.5%</b> of goal, a gap of <b>$2.63M</b>.</p>
+<p>At the current pace of $1.23M per calendar day, the month would close near <b>$36.8M</b> against the full-month goal of $42.10M.<span class="cite">2</span></p>
+<p>Confidence is lower for two reasons: the goal was read from an uploaded budget workbook that has not been certified, and Kinetic prorated the monthly goal by calendar days because no daily goal curve exists.</p>
+<h3 class="ansh">Derivation</h3>
+<p>Percent of goal = Cash Collected MTD ÷ Prorated MTD Goal × 100 = 18.42 / 21.05 × 100 = 87.5%.<br>Prorated MTD Goal = Monthly goal $42.10M × 15 / 30 days = $21.05M.</p>`,
+  conf:{tier:'assisted',pct:62,why:'Cash is certified, but the goal comes from an uploaded workbook and the proration is Kinetic\'s own assumption. Verify before sharing.'},
+  tiles:[['Cash collected MTD','$18.42M'],['Percent of MTD goal','87.5%']],
+  sources:[
+   {n:1,q:'Cash Collected MTD v1 · 2026-11',label:'daily cash',tier:'certified',src:'Cash Management · Daily Cash Posting',ttl:'Cash Collected MTD, all facilities',cell:'Row <code>All facilities</code> × column <code>MTD Cash</code>, posted through 11/15/2026',val:'$18,421,906.40',asof:'Refreshed 11/16/2026'},
+   {n:2,q:'Cash goal · November 2026',label:'budget upload',tier:'assisted',src:'Uploaded file · FY27_Cash_Goals.xlsx',ttl:'Sheet “Monthly goals”, cell D14',cell:'Row <code>November 2026</code> × column <code>Cash Goal</code>, not certified',val:'$42,100,000.00',asof:'Uploaded by Finance 10/03/2026'},
+   {n:3,q:'Cash goal · November 2026',label:'kinetic assumption',tier:'assisted',src:'Kinetic · Derived value',ttl:'Prorated month-to-date goal',cell:'Calendar-day proration, <code>15 of 30 days</code>',val:'$21,050,000.00',asof:'Computed for this answer'}
+  ],
+  fups:[{t:'Break the gap down by facility'},{t:'Show daily cash against a straight-line goal'},{t:'Ask Finance to certify the goal workbook',act:true}]
  },
  generic:{
   arch:'Derive a measure from governed measures',metrics:'Accounts AR 90+ v1, Accounts Total Current Balance v1',period:'2026-10',ttl:'A/R over 90 days, and its share of total A/R',
-  html:`<p>Accounts AR 90+ for 2026-10 is <b>$103,746,373.86</b>. Against Accounts Total Current Balance of <b>$663,353,084.96</b> for the same period, it represents <b>15.64%</b> of total A/R.</p>
+  html:`<p>Accounts AR 90+ for 2026-10 is <b>$103,746,373.86</b><span class="cite">1</span>. Against Accounts Total Current Balance of <b>$663,353,084.96</b><span class="cite">2</span> for the same period, it represents <b>15.64%</b> of total A/R.</p>
 <p>Both figures were read from the current snapshot available to the product; the contract's calendar label is 2026-10, but the snapshot actually read is whatever the product last loaded, not confirmed to be the calendar close.</p>
 <p>The underlying measure is positive-valued: it grows as the overdue balance rises.</p>
-<p>Three filters were applied that the question did not ask for: the current snapshot only, real patients only (excluding test/synthetic accounts), and non-zero account balances.</p>
+<p>Three filters were applied that the question did not ask for: the current snapshot only, real patients only (excluding test/synthetic accounts), and non-zero account balances.<span class="cite">3</span></p>
 <h3 class="ansh">Derivation</h3>
 <p>The 15.64% figure is a derived share, not a governed metric in its own right: it is computed as (Accounts AR 90+ ÷ Accounts Total Current Balance) × 100, using the two governed measures above. It carries no metric standard, no definition authority and no owner of its own, so it should not be read or cited as if it were a named governed metric - it is reported here by its operands. There is only one group in this computation (the whole population), so this share is also, trivially, the overall ratio: the shares of all groups add up to the whole's own ratio, and there is no breakdown here to sum incorrectly.</p>
 <h3 class="ansh">Operands</h3>
 <p>Numerator: Accounts AR 90+ = $103,746,373.86 (2026-10)<br>Denominator / whole: Accounts Total Current Balance = $663,353,084.96 (2026-10)<br>Result: 103,746,373.86 / 663,353,084.96 × 100 = 15.64%</p>`,
-  sources:[{n:1,t:'A/R aging snapshot'},{n:2,t:'Facility rollup'}],
+  conf:{tier:'governed',pct:88,why:'Both operands are certified measures. The 15.64% share is derived from them and has no certified definition of its own.'},
+  tiles:[['Accounts AR 90+','$103.7M'],['Share of total A/R','15.64%']],
+  sources:[
+   {n:1,q:'Accounts AR 90+ v1 · 2026-10',label:'a/r aging',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts AR 90+, all facilities',cell:'Row <code>All facilities</code> × column <code>AR 90+</code>',val:'$103,746,373.86',asof:'Snapshot 10/22/2026'},
+   {n:2,q:'Accounts Total Current Balance v1 · 2026-10',label:'a/r aging',tier:'certified',src:'Receivables · A/R Aging Summary',ttl:'Accounts Total Current Balance, all facilities',cell:'Row <code>All facilities</code> × column <code>Total A/R</code>',val:'$663,353,084.96',asof:'Snapshot 10/22/2026'},
+   {n:3,q:'Accounts Total Current Balance v1 · 2026-10',label:'facility rollup',tier:'governed',src:'Receivables · Facility A/R Rollup',ttl:'Accounts in scope after filters',cell:'Filters <code>Real patients only</code>, <code>Balance ≠ 0</code>, <code>Current snapshot</code>',val:'48,212 accounts',asof:'Snapshot 10/22/2026'}
+  ],
   fups:[{t:'Break this down by facility'},{t:'Compare to the same month last year'},{t:'Pin this to the Analytical library',act:true}]
  }
 };
@@ -450,6 +552,66 @@ const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')
 let toastTimer;
 function toast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),2600)}
 function pageCtx(){return({library:'Analytical library · All items',cerebrum:'Cerebrum · Kinetic graph',agents:'Agents',conversations:'Conversations'})[S.page]||null}
+
+/* ============ trust layer: confidence, citations, sources, feedback ============ */
+const TIERS={
+ certified:{name:'Certified',icon:'badge-check',range:'100%',desc:'Certified metrics with an owner and a definition authority.'},
+ governed:{name:'Governed',icon:'shield',range:'70-99%',desc:'Built from governed measures, with a derived or unreviewed step.'},
+ assisted:{name:'Assisted',icon:'sparkles',range:'Below 70%',desc:'Kinetic filled gaps with uploaded data or its own assumptions.'}
+};
+const FB={
+ up:{q:'What did you like about this response? (optional)',o:['Up to date','Accurate','Helpful','Followed instructions','Good sources']},
+ down:{q:"What didn't you like about this response? (optional)",o:['Out of date','Inaccurate','Wrong sources','Too long','Too short']}
+};
+function confHTML(a){
+  if(!a.conf)return '';
+  const t=TIERS[a.conf.tier];
+  return `<span class="conf tier-${a.conf.tier}"><span>Confidence level</span><span class="confpill">${ic(t.icon)}${t.name}</span>
+    <span class="confhelp" tabindex="0" role="button" aria-label="Confidence ${a.conf.pct}%, ${t.name}">${ic('circle-help')}
+      <span class="conftip" role="tooltip"><span class="ct-h">Confidence level</span>
+        <span class="ct-v"><span class="pct">${a.conf.pct}%</span><span class="ct-n">${t.name}</span></span>
+        <span style="display:block">${esc(a.conf.why)}</span>
+        <span class="scale">${Object.entries(TIERS).map(([k,v])=>`<span class="lv tier-${k}${k===a.conf.tier?' on':''}"><i></i><span>${v.name}</span><span class="r">${v.range}</span></span>`).join('')}</span>
+      </span></span></span>`;
+}
+function citeHTML(a,html){
+  return html.replace(/<span class="cite">(\d+)<\/span>/g,(_,n)=>{
+    const s=(a.sources||[]).find(x=>x.n==n);if(!s||!s.tier)return '';
+    return `<button class="cite tier-${s.tier}" data-cite="${n}" aria-label="Source: ${esc(s.src)}">${esc(s.label)}<span class="citepop"><span class="cp-from"><i></i>${esc(s.src)}<span class="tn">${TIERS[s.tier].name}</span></span><span class="cp-ttl">${esc(s.ttl)}</span><span class="cp-cell">${s.cell}: <span class="val">${esc(s.val)}</span></span></span></button>`;
+  });
+}
+function fbPopHTML(mi,dir){
+  const f=FB[dir];
+  return `<div class="fbpop" role="dialog" aria-label="Feedback"><div class="hd"><span>${f.q}</span><button class="k-iconbtn" data-fbclose="1" title="Close" aria-label="Close">${ic('x')}</button></div>
+    <div class="fbopts">${f.o.map(o=>`<button class="fbopt" data-fbopt="${mi}|${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+}
+function msgActsHTML(m,mi){
+  const a=m.answer,src=a.sources||[];
+  const open=S.canvas&&S.canvas.type==='sources'&&S.canvas.answer===a;
+  const tiers=[...new Set(src.map(s=>s.tier))];
+  return `<div class="msgacts">${S.fbOpen===mi&&m.fb?fbPopHTML(mi,m.fb):''}
+    <button class="k-iconbtn${m.fb==='up'?' on':''}" data-fb="${mi}:up" title="Helpful" aria-label="Helpful" aria-pressed="${m.fb==='up'}">${ic('thumbs-up')}</button>
+    <button class="k-iconbtn${m.fb==='down'?' on':''}" data-fb="${mi}:down" title="Not helpful" aria-label="Not helpful" aria-pressed="${m.fb==='down'}">${ic('thumbs-down')}</button>
+    ${src.length?`<button class="srcpill${open?' on':''}" data-sources="1"><span class="srcstack">${tiers.map(t=>`<i class="tier-${t}">${ic(TIERS[t].icon)}</i>`).join('')}</span>${src.length} sources</button>`:''}
+  </div>`;
+}
+function sourcesHTML(){
+  const c=S.canvas,a=c.answer,groups=[];
+  (a.sources||[]).forEach(s=>{let g=groups.find(x=>x.q===s.q);if(!g)groups.push(g={q:s.q,items:[]});g.items.push(s)});
+  return `<aside class="canvas">
+    <div class="cvhead"><span class="cvicon">${ic('table')}</span><b>Sources</b><span class="cvcount">${a.sources.length}</span><span class="spacer"></span>
+      <button class="k-iconbtn" id="cvClose" title="Close" aria-label="Close">${ic('x')}</button></div>
+    <div class="k-scroll" id="srcScroll"><div class="srclist">
+      ${groups.map(g=>`<div class="srcgrp">Results for “${esc(g.q)}”</div>${g.items.map(s=>{const t=TIERS[s.tier];return `<button class="srcitem tier-${s.tier}${c.focus==s.n?' focus':''}" id="src-${s.n}" data-act="Opens ${esc(s.src.split(' · ').pop())} with this cell highlighted. Mocked in this prototype">
+        <span class="from"><i>${ic(t.icon)}</i><span class="nm">${esc(s.src)}</span><span class="tierchip">${t.name}</span></span>
+        <span class="ttl">${esc(s.ttl)}${ic('external-link')}</span>
+        <span class="cell">${s.cell}</span>
+        <span class="valrow"><span class="val">${esc(s.val)}</span> · ${esc(s.asof)}</span>
+      </button>`}).join('')}`).join('')}
+      <p class="cvq" style="padding:0 .75rem">Each source points to the exact report cell Kinetic read. Opening one shows the report with that cell highlighted.</p>
+    </div></div>
+  </aside>`;
+}
 
 /* ============ chat pieces ============ */
 function composerHTML(where){
@@ -514,11 +676,11 @@ function focusComposer(){
 function msgHTML(m){
   if(m.role==='user')return `<div class="msg-u"><div class="bubble">${esc(m.text)}</div></div>`;
   if(m.role==='run')return runHTML(m);
-  const a=m.answer;
-  return `<div class="msg-a">
-    <div class="ahead"><img src="${LOGO}" alt=""><b>Kinetic</b></div>
+  const a=m.answer,mi=S.thread.indexOf(m);
+  return `<div class="msg-a" data-mi="${mi}">
+    <div class="ahead"><img src="${LOGO}" alt=""><b>Kinetic</b>${confHTML(a)}</div>
     <div class="anscard">
-      <div class="ansbody"><div class="prose">${a.html}</div>
+      <div class="ansbody"><div class="prose">${citeHTML(a,a.html)}</div>
         <button class="ansrow" data-act="Grounding layers are mocked in this prototype">${ic('chevron-right')}<span>Grounding</span><span class="right">5 layers</span></button>
         <button class="ansrow" data-act="Provenance is mocked in this prototype">${ic('chevron-right')}<span>Provenance · Output contract</span></button>
       </div>
@@ -528,11 +690,9 @@ function msgHTML(m){
         <button class="k-btn" data-act="Added to the Analytical library">${ic('library')}Add to library</button>
         <button class="k-btn" data-act="Subscribe is mocked in this prototype">${ic('bell')}Subscribe</button>
         <button class="k-btn" data-act="Pinned">${ic('pin')}Pin</button>
-        <span style="flex-basis:100%;height:0"></span>
-        <button class="k-btn k-btn--quiet" data-act="Run log is mocked in this prototype">${ic('flag')}Run log</button>
-        <button class="k-btn k-btn--quiet" data-act="How I got here is mocked in this prototype">How I got here ${ic('chevron-down')}</button>
       </div>
     </div>
+    ${msgActsHTML(m,mi)}
     <div class="fups">${a.fups.map(f=>`<button class="fup" data-fup="${esc(f.t)}">${ic('corner-down-right')}${esc(f.t)}${f.act?'<span class="act">ACTION</span>':''}</button>`).join('')}</div>
   </div>`;
 }
@@ -675,18 +835,18 @@ function fullChatHTML(){
   </div>`;
 }
 function canvasHTML(){
+  if(S.canvas.type==='sources')return sourcesHTML();
   const c=S.canvas,a=c.answer;
   const body=c.type==='dashboard'
     ?`<h2 class="cvtitle">${esc(a.ttl)}</h2>
       <div class="cvtiles">
-        <div class="tile"><small>${a.ttl.startsWith('A/R')?'Accounts AR 90+':'Denied amount'}</small><div class="big2">${a.ttl.startsWith('A/R')?'$103.7M':'$4.21M'}</div></div>
-        <div class="tile"><small>${a.ttl.startsWith('A/R')?'Share of total A/R':'Change vs prior month'}</small><div class="big2">${a.ttl.startsWith('A/R')?'15.64%':'+6.4%'}</div></div>
+        ${(a.tiles||[]).map(t=>`<div class="tile"><small>${t[0]}</small><div class="big2">${t[1]}</div></div>`).join('')}
       </div>
       <div class="tile" style="margin-top:.75rem"><small>Trend · last 12 periods</small><div class="sk" style="height:120px;border-radius:.5rem"></div></div>
       <p class="cvq">Live tiles are mocked in this prototype. A saved dashboard collects in the Analytical library.</p>`
     :`<div style="font-size:.8125rem;font-weight:600;color:var(--k-ink-2);margin:.25rem 0">Finding</div>
       <h2 class="cvtitle">${esc(a.ttl)}</h2>
-      <div class="prose">${a.html}</div>
+      <div class="prose">${citeHTML(a,a.html)}</div>
       <p style="font-size:.875rem;color:var(--k-ink-2)">This analysis is grounded on: Business vocabulary, Metric standards, Semantic layer, Data policy, Analytic guardrails - the layers the grounding bundle carried for this run. No required layer was reported missing.</p>
       <div class="cvsec">Grounding&nbsp;<span style="color:var(--k-muted);font-weight:400;font-size:.8125rem">5 layers</span><span style="margin-left:auto">${ic('chevron-down')}</span></div>
       <div class="cvsec">Source data</div>
@@ -783,6 +943,7 @@ function drawGalaxy(){
 
 /* ============ render ============ */
 function render(){
+  const _keep=S.keepScroll?{chat:(el('chatScroll')||{}).scrollTop,panel:(document.querySelector('#panel .k-scroll')||{}).scrollTop}:null;S.keepScroll=false;
   el('sidebar').innerHTML=sidebarHTML();
   const pg=el('page');
   if(S.page==='home')pg.innerHTML=fullChatHTML();
@@ -795,7 +956,7 @@ function render(){
   panel.classList.toggle('open',S.panelOpen);
   panel.innerHTML=S.panelOpen?panelHTML():'';
   if(S.panelOpen&&!S.thread.length&&!S.chips.length){const c=pageCtx();if(c){S.chips=[c];panel.innerHTML=panelHTML()}}
-  for(const sc of document.querySelectorAll('#panel .k-scroll, #chatScroll')) sc.scrollTop=sc.scrollHeight;
+  for(const sc of document.querySelectorAll('#panel .k-scroll, #chatScroll')){const v=_keep&&(sc.id==='chatScroll'?_keep.chat:_keep.panel);sc.scrollTop=v!=null?v:sc.scrollHeight}
   if(S.page==='cerebrum')requestAnimationFrame(drawGalaxy);
 }
 
@@ -805,7 +966,7 @@ function send(text){
   if(!text||S.streaming)return;
   if(!S.thread.length)S.threadTitle=text.length>46?text.slice(0,44)+'…':text;
   S.thread.push({role:'user',text});
-  const ans=/deni|payer/i.test(text)?CANNED.denied:CANNED.generic;
+  const ans=/deni|payer/i.test(text)?CANNED.denied:/cash|goal/i.test(text)?CANNED.cash:CANNED.generic;
   const run={role:'run',cur:0,done:false,stopped:false,expanded:false,start:Date.now(),durs:[],q:text,arch:ans.arch,metrics:ans.metrics,period:ans.period};
   S.thread.push(run);
   S.streaming=true;
@@ -843,9 +1004,21 @@ function openLast(){
 /* ============ events ============ */
 document.addEventListener('click',e=>{
   if(S.modeOpen&&!e.target.closest('.k-modewrap')){S.modeOpen=false;render()}
+  if(S.fbOpen!=null&&!e.target.closest('.fbpop,[data-fb]')){S.fbOpen=null;S.keepScroll=true;render()}
   const b=e.target.closest('button, a[data-nav], a.k-navsec--link');if(!b)return;
   if(b.dataset.modebtn){S.modeOpen=!S.modeOpen;S.modeWhere=b.dataset.modebtn;render();return}
   if(b.dataset.mode){S.mode=b.dataset.mode;S.modeOpen=false;render();return}
+  if(b.dataset.fb){const [mi,dir]=b.dataset.fb.split(':');const m=S.thread[+mi];if(!m)return;if(m.fb===dir){m.fb=null;S.fbOpen=null}else{m.fb=dir;S.fbOpen=+mi}S.keepScroll=true;render();return}
+  if(b.dataset.fbclose){S.fbOpen=null;S.keepScroll=true;render();return}
+  if(b.dataset.fbopt){const [mi,r]=b.dataset.fbopt.split('|');const m=S.thread[+mi];if(m)m.fbReason=r;S.fbOpen=null;S.keepScroll=true;render();toast('Thanks for the feedback');return}
+  if(b.dataset.cite||b.dataset.sources){
+    const host=b.closest('[data-mi]');const a=host?(S.thread[+host.dataset.mi]||{}).answer:(S.canvas&&S.canvas.answer);if(!a)return;
+    const focus=b.dataset.cite?+b.dataset.cite:null;
+    if(!focus&&S.canvas&&S.canvas.type==='sources'&&S.canvas.answer===a){S.canvas=null}
+    else{S.canvas={type:'sources',answer:a,focus,q:S.threadTitle};if(S.panelOpen){S.returnPage=S.page;S.panelOpen=false}S.page='home'}
+    S.keepScroll=true;render();
+    if(focus)requestAnimationFrame(()=>{const f=el('src-'+focus);if(f)f.scrollIntoView({block:'nearest'})});
+    return}
   if(b.dataset.nav){S.page=b.dataset.nav;S.returnPage=null;render();return}
   if(b.dataset.navNew){newChat();S.page='home';S.panelOpen=false;S.returnPage=null;render();return}
   if(b.id==='askanaBtn'){S.panelOpen=!S.panelOpen;render();return}
@@ -873,6 +1046,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='j'){e.preventDefault();S.panelOpen=!S.panelOpen;render()}
   if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();S.page='search';render()}
+  if(e.key==='Escape'&&S.fbOpen!=null){S.fbOpen=null;S.keepScroll=true;render();return}
   if(e.key==='Escape'){if(S.modeOpen){S.modeOpen=false;render()}else if(S.panelOpen){S.panelOpen=false;render()}}
   if(e.key==='Enter'&&!e.shiftKey&&e.target.classList&&e.target.classList.contains('cinput')){e.preventDefault();send(e.target.value)}
 });

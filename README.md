@@ -8,7 +8,9 @@ Interactive prototype of the chat-first ("Ana-first") unified chat flow for VQ8 
 - Ask Ana button in every page header + Cmd+J: docked chat panel on the left of any page (Analytical library, Cerebrum, Agents), with the page attached as a removable context chip
 - Expand panel to full screen and dock back without losing the thread; one conversation store across all surfaces
 - Kinetic-style run card: one-line step indicator (Step N of 7) with Show details accordion, 7-segment progress bar, skeleton placeholders while running
-- Finished answer card: Derivation/Operands sections, Grounding and Provenance rows, action bar (Open as report, Create dashboard, Add to library, Subscribe, Pin, Run log, How I got here)
+- Finished answer card: Derivation/Operands sections, Grounding and Provenance rows, action bar (Open as report, Create dashboard, Add to library, Subscribe, Pin)
+- Confidence level on every answer: Certified (100%), Governed (70-99%), Assisted (below 70%), color coded green / blue / amber, with a ? tooltip showing the percentage, the reason, and the tier scale
+- Perplexity-style trust layer: inline citation chips (hover shows report, cell and value), thumbs up/down with an optional reason popover, and an "N sources" pill that opens a Sources pane on the right listing the exact report cell behind each figure
 - Artifact canvas: Open as report / Create dashboard opens a Report or Dashboard on the right, chat stays left; from a docked panel it promotes to the full-screen split
 - Type Mode popup (Auto / Agentic), ChatGPT/Claude-style stop button, composer autofocus after a reply
 
