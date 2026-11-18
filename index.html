@@ -464,8 +464,259 @@ svg.k-i{width:1rem;height:1rem;flex:0 0 auto}
 .panelhead .k-i{color:var(--k-accent-ink)}
 .panelhead .title{font-size:.8125rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--k-raised);border:1px solid var(--k-line-2);border-radius:.5rem;padding:.5rem 1rem;font-size:.8125rem;box-shadow:var(--k-shadow-float);z-index:60}
+
+/* ---------- Agents: lot-map style live maps on the Cerebrum stage ---------- */
+:root{--cb-grounding:#5aa9ff;--cb-governance:#ffc45a;--cb-agent:#ab8cff;--cb-exec:#ff8c46;--cb-accent:#ff8a3d;--cb-good:#7ee0a0;--cb-bg:#07080f;
+  --cb-display:"Chakra Petch","Inter",system-ui,sans-serif;--cb-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.ag-wrap{max-width:76rem}
+.ag-wrap--wide{max-width:90rem}
+.ag-stage{position:relative;overflow:hidden;border-radius:.75rem;border:1px solid rgba(140,150,190,.18);background:var(--cb-bg);box-shadow:inset 0 0 60px rgba(0,0,0,.6)}
+.ag-stage canvas{display:block;width:100%;height:100%}
+.ag-hero{height:440px;margin-bottom:1.25rem}
+.ag-hero canvas{cursor:default}
+.ag-ov{position:absolute;z-index:2}
+.ag-ov.tl{top:14px;left:16px}.ag-ov.tr{top:10px;right:10px}.ag-ov.bl{bottom:12px;left:16px}.ag-ov.br{bottom:12px;right:16px}
+.ag-ovt{margin:0;font-family:var(--cb-display);font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:12px;color:#e8ebf5}
+.ag-ovs{margin:.125rem 0 0;font-family:var(--cb-mono);font-size:11px;color:#8d94ad}
+.ag-hint{font-family:var(--cb-mono);font-size:10.5px;color:#5b6179}
+.ag-hide{height:28px;color:#8d94ad}
+.ag-legend{display:flex;flex-wrap:wrap;gap:.875rem;font-family:var(--cb-mono);font-size:10.5px;color:#8d94ad}
+.ag-legend span{display:inline-flex;align-items:center;gap:.375rem}
+.ag-legend i{width:8px;height:8px;border-radius:50%;box-shadow:0 0 6px currentColor}
+.ag-herocollapsed{display:flex;align-items:center;gap:.5rem;width:100%;padding:.625rem .875rem;margin-bottom:1.25rem;border:1px dashed var(--k-line-2);border-radius:var(--k-r);color:var(--k-ink-2);font-size:.8125rem}
+.ag-herocollapsed:hover{border-color:var(--k-accent);color:var(--k-accent-ink)}
+.ag-herocollapsed span{margin-left:auto;font-family:var(--cb-mono);font-size:11px;color:var(--k-muted)}
+.ag-tip{position:absolute;z-index:3;pointer-events:none;min-width:220px;max-width:280px;padding:.625rem .75rem;border-radius:.5rem;background:rgba(12,14,24,.94);border:1px solid rgba(140,150,190,.25);box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:12px;color:#c4c7d7}
+.ag-tip b{display:block;color:#fff;font-size:13px;margin-bottom:.125rem}
+.ag-tip .m{font-family:var(--cb-mono);font-size:10.5px;color:#8d94ad}
+
+/* status pills */
+.ag-pill{display:inline-flex;align-items:center;gap:.375rem;height:22px;padding:0 9px;border-radius:11px;font-size:11.5px;font-weight:600;white-space:nowrap;border:1px solid transparent}
+.ag-pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.ag-pill.ok{color:var(--k-ok);background:rgba(124,192,118,.12);border-color:rgba(124,192,118,.3)}
+.ag-pill.warn{color:var(--k-warn);background:rgba(227,166,64,.12);border-color:rgba(227,166,64,.3)}
+.ag-pill.bad{color:var(--k-bad);background:rgba(236,123,123,.12);border-color:rgba(236,123,123,.3)}
+.ag-pill.info{color:var(--k-info);background:rgba(127,176,220,.12);border-color:rgba(127,176,220,.3)}
+.ag-pill.paused{color:var(--k-muted);background:rgba(156,159,178,.1);border-color:var(--k-line-2)}
+.ag-pill.run{color:var(--cb-agent);background:rgba(171,140,255,.14);border-color:rgba(171,140,255,.4)}
+.ag-pill.run::before{box-shadow:0 0 0 0 rgba(171,140,255,.7);animation:agping 1.4s infinite}
+@keyframes agping{0%{box-shadow:0 0 0 0 rgba(171,140,255,.7)}100%{box-shadow:0 0 0 7px rgba(171,140,255,0)}}
+@media (prefers-reduced-motion:reduce){.ag-pill.run::before,.ag-livepill i{animation:none}}
+
+/* list toolbar */
+.ag-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:.625rem;margin-bottom:1rem}
+.ag-sec{font-size:12px;font-weight:600;color:var(--k-ok);margin:0 0 .5rem}
+.ag-sec span{color:var(--k-muted);font-weight:500;margin-left:.25rem}
+
+/* cards */
+.ag-cards{display:grid;gap:.875rem;grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+.agc{display:flex;flex-direction:column;gap:.625rem;padding:1rem;border:1px solid var(--k-line-2);border-radius:.625rem;background:var(--k-surface);cursor:pointer;transition:border-color .15s,box-shadow .15s;position:relative}
+.agc:hover{border-color:rgba(255,141,64,.6);box-shadow:0 0 0 1px rgba(255,141,64,.15),0 8px 24px rgba(0,0,0,.25)}
+.agc:focus-visible{outline:2px solid var(--k-accent);outline-offset:2px}
+.agc.live{border-color:rgba(171,140,255,.45);box-shadow:0 0 24px rgba(171,140,255,.12)}
+.agc-top{display:flex;align-items:flex-start;gap:.75rem}
+.agc-ic,.agd-ic{flex:none;display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:.5rem;background:rgba(238,109,11,.18);color:var(--k-accent-ink)}
+.agc-tt{flex:1;min-width:0}
+.agc-tt h3{margin:0;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.agc-meta{font-size:12px;color:var(--k-muted);margin-top:.125rem}
+.agc-meta .k{color:var(--k-accent-ink);font-weight:600}
+.agc-instr{margin:0;font-size:13px;font-style:italic;color:var(--k-ink-2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.agc-runs{display:flex;align-items:center;gap:.625rem;font-size:12px;color:var(--k-muted)}
+.ag-strip{display:inline-flex;gap:3px}
+.ag-strip i{width:8px;height:14px;border-radius:2px;background:var(--k-ok);opacity:.85}
+.ag-strip i.needs{background:var(--k-warn)}.ag-strip i.budget{background:var(--k-bad)}.ag-strip i.failed{background:transparent;box-shadow:inset 0 0 0 1.5px var(--k-bad)}
+.agc-foot{font-size:12px;color:var(--k-muted);border-top:1px solid var(--k-line);padding-top:.625rem;display:flex;flex-wrap:wrap;gap:.25rem .75rem}
+.agc-foot b{color:var(--k-ink-2);font-weight:500}
+.agc-acts{display:flex;align-items:center;gap:.25rem;flex-wrap:wrap}
+.agc-acts .sp{flex:1}
+.ag-lnk{height:28px;padding:0 .5rem;border-radius:.375rem;font-size:12.5px;font-weight:600;color:var(--k-ink-2);display:inline-flex;align-items:center;gap:.375rem}
+.ag-lnk:hover{background:var(--k-hover-neutral);color:var(--k-ink)}
+.ag-lnk.danger{color:var(--k-bad)}
+.ag-lnk.danger:hover{background:rgba(236,123,123,.14)}
+.ag-lnk.box{border:1px solid var(--k-line-2)}
+.ag-confirm{display:flex;align-items:center;gap:.5rem;font-size:12.5px;color:var(--k-bad)}
+
+/* tables */
+.ag-table{width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--k-line-2);border-radius:.5rem;overflow:hidden}
+.ag-table th{text-align:left;font-size:12px;font-weight:600;color:var(--k-muted);padding:.5rem .75rem;border-bottom:1px solid var(--k-line-2);background:rgba(25,30,49,.5);white-space:nowrap}
+.ag-table td{padding:.625rem .75rem;border-bottom:1px solid var(--k-line);vertical-align:middle}
+.ag-table tr:last-child td{border-bottom:0}
+.ag-table tbody tr{cursor:pointer}
+.ag-table tbody tr:hover td{background:rgba(255,255,255,.025)}
+.ag-table .nm{font-weight:600}
+.ag-table .sub{font-size:12px;color:var(--k-muted);max-width:28rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-table .mono{font-family:var(--cb-mono);font-size:12px;color:var(--k-ink-2)}
+.ag-table .acts{white-space:nowrap;text-align:right}
+.ag-tablewrap{overflow-x:auto}
+
+/* detail */
+.agd-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:.875rem;margin-bottom:1rem}
+.agd-ic{width:3rem;height:3rem;border-radius:.625rem;background:var(--k-grad);color:var(--k-on-grad)}
+.agd-ic svg{width:1.375rem;height:1.375rem}
+.agd-tt{flex:1;min-width:16rem}
+.agd-tt h1{margin:0;font-size:24px;font-weight:300;letter-spacing:-.01em}
+.agd-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.375rem 1rem;margin-top:.375rem;font-size:12.5px;color:var(--k-muted)}
+.agd-meta>span:not(.ag-pill){display:inline-flex;align-items:center;gap:.375rem}
+.agd-meta svg{width:.875rem;height:.875rem}
+.agd-acts{display:flex;gap:.5rem}
+.agd-grid{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr) 380px;align-items:start}
+@media (max-width:1180px){.agd-grid{grid-template-columns:minmax(0,1fr)}}
+.ag-stage--detail{height:clamp(480px,calc(100vh - 290px),720px)}
+.ag-stagetag{position:absolute;top:12px;left:14px;z-index:2;font-family:var(--cb-mono);font-size:11px;color:#8d94ad;display:flex;align-items:center;gap:.5rem}
+.ag-stagetag b{font-family:var(--cb-display);letter-spacing:.14em;text-transform:uppercase;color:#e8ebf5;font-size:12px;font-weight:600}
+.agd-side{display:flex;flex-direction:column;gap:.75rem;min-width:0}
+.ag-panel{border:1px solid rgba(140,150,190,.18);border-radius:.625rem;background:#0c0e18;color:#c4c7d7}
+.ag-now{padding:.75rem .875rem;font-family:var(--cb-mono);font-size:12px;line-height:1.5;color:#e8ebf5;min-height:3.25rem}
+.ag-now small{display:block;color:#8d94ad;font-size:11px}
+.ag-play{padding:.5rem .625rem .625rem;border-top:1px solid rgba(140,150,190,.12)}
+.ag-playrow{display:flex;align-items:center;gap:.25rem;min-height:30px}
+.ag-playrow .k-iconbtn{color:#c4c7d7}
+.ag-speed{display:inline-flex;gap:2px;padding:2px;border-radius:5px;border:1px solid rgba(140,150,190,.2);margin-left:.25rem}
+.ag-speed button{font-family:var(--cb-mono);font-size:11px;padding:1px 7px;border-radius:3px;color:#8d94ad}
+.ag-speed button.on{background:rgba(255,138,61,.2);color:#ffb27a}
+.ag-pbinfo{margin-left:auto;font-family:var(--cb-mono);font-size:11px;color:#8d94ad;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-livepill{display:inline-flex;align-items:center;gap:.375rem;font-family:var(--cb-mono);font-size:11px;font-weight:500;color:var(--cb-agent);padding:2px 8px;border:1px solid rgba(171,140,255,.4);border-radius:10px}
+.ag-livepill i{width:6px;height:6px;border-radius:50%;background:var(--cb-agent);animation:agping 1.4s infinite}
+.ag-scrub{position:relative;height:14px;margin-top:.375rem;cursor:pointer}
+.ag-scrub::before{content:"";position:absolute;left:0;right:0;top:6px;height:2px;border-radius:1px;background:rgba(140,150,190,.18)}
+.ag-scrub.live{cursor:default}
+.ag-scrubfill{position:absolute;left:0;top:6px;height:2px;border-radius:1px;background:linear-gradient(90deg,var(--cb-agent),var(--cb-accent));width:0}
+.ag-scrubfill::after{content:"";position:absolute;right:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ffd9bd;box-shadow:0 0 8px var(--cb-accent)}
+.ag-scrubt{display:flex;justify-content:space-between;font-family:var(--cb-mono);font-size:10.5px;color:#5b6179}
+.ag-feed{padding:.375rem 0;font-family:var(--cb-mono);font-size:12px}
+.ag-feedh{display:flex;justify-content:space-between;padding:.375rem .875rem .25rem;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#5b6179}
+.ag-row{display:grid;grid-template-columns:14px 84px minmax(0,1fr) auto;gap:.5rem;align-items:baseline;padding:.1875rem .875rem;color:#8d94ad}
+.ag-row .g{text-align:center}
+.ag-row .st{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ag-row .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#c4c7d7}
+.ag-row .tm{color:#5b6179;white-space:nowrap}
+.ag-row.run .lb{color:#fff}
+.ag-row.run .tm{color:#c4c7d7}
+.ag-row.err .lb,.ag-row.err .st,.ag-row.err .g{color:#ff8a8a}
+.ag-row.ans .lb{color:#ffd0ad}
+.ag-row .more{color:#5b6179;margin-left:.375rem}
+.ag-empty{padding:.75rem .875rem;color:#5b6179;font-family:var(--cb-mono);font-size:12px}
+.ag-result{padding:.875rem}
+.ag-result h4{margin:0 0 .5rem;font-size:13px;font-weight:600;color:#fff;display:flex;align-items:center;gap:.5rem}
+.ag-result h4 svg{color:var(--cb-good)}
+.ag-result h4.bad svg{color:var(--k-bad)}
+.ag-result h4.warn svg{color:var(--k-warn)}
+.ag-result ul{margin:0 0 .75rem;padding-left:1.1rem;font-size:13px;line-height:1.55;color:#c4c7d7}
+.ag-result li+li{margin-top:.25rem}
+.ag-result .outs{display:flex;flex-wrap:wrap;gap:.375rem}
+.ag-out{display:inline-flex;align-items:center;gap:.375rem;height:28px;padding:0 10px;border-radius:.375rem;border:1px solid rgba(140,150,190,.25);font-size:12px;color:#e8ebf5}
+.ag-out:hover{border-color:var(--cb-accent);color:#ffb27a}
+.ag-out svg{width:.875rem;height:.875rem}
+.ag-out.gov{border-color:rgba(255,196,90,.45)}
+.ag-notice{margin:0 0 .75rem;padding:.5rem .625rem;border-radius:.375rem;font-size:12.5px;line-height:1.45;background:rgba(236,123,123,.1);border:1px solid rgba(236,123,123,.35);color:#ffb4b4}
+
+/* settings (agent editor) */
+.ae{max-width:52rem;margin:0 auto;padding-bottom:5rem}
+.aesec{border:1px solid var(--k-line-2);border-radius:.625rem;padding:1.125rem;margin-bottom:1rem;background:var(--k-surface)}
+.aesec h3{margin:0;font-size:14.5px;font-weight:600}
+.aesec h3 .req{color:var(--k-bad)}
+.aesec>p,.aesec-p{margin:.125rem 0 .875rem;font-size:13px;color:var(--k-muted)}
+.ae-in,.ae-ta,.ae-sel{width:100%;border:1px solid var(--k-line-2);border-radius:.375rem;background:var(--k-side);color:var(--k-ink);padding:.5rem .625rem;font-size:13.5px}
+.ae-ta{min-height:6.5rem;resize:vertical;line-height:1.5}
+.ae-in:focus,.ae-ta:focus,.ae-sel:focus{outline:none;border-color:var(--k-accent);box-shadow:0 0 0 2px rgba(238,109,11,.25)}
+.ae-sel{width:auto;padding:.3125rem .5rem;font-size:13px;cursor:pointer}
+.ae-chips{display:flex;flex-wrap:wrap;gap:.375rem;margin-bottom:.625rem}
+.ae-chip{display:inline-flex;align-items:center;gap:.375rem;height:28px;padding:0 6px 0 10px;border-radius:14px;background:rgba(171,140,255,.14);border:1px solid rgba(171,140,255,.35);font-size:12.5px;color:#d9ccff}
+.ae-chip svg{width:.875rem;height:.875rem}
+.ae-chip button{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#b9a8ef}
+.ae-chip button:hover{background:rgba(255,255,255,.1);color:#fff}
+.ae-add{display:inline-flex;align-items:center;gap:.375rem;font-size:13px;font-weight:600;color:var(--k-ink)}
+.ae-add:hover{color:var(--k-accent-ink)}
+.ae-add:disabled{color:var(--k-muted);cursor:default}
+.ae-menuwrap{position:relative;display:inline-block}
+.ae-menu{position:absolute;top:calc(100% + 6px);left:0;z-index:20;min-width:15rem;padding:.25rem;border-radius:.5rem;border:1px solid var(--k-line-2);background:var(--k-raised);box-shadow:var(--k-shadow-float)}
+.ae-menu button{display:flex;align-items:center;gap:.5rem;width:100%;padding:.4375rem .625rem;border-radius:.375rem;font-size:13px;color:var(--k-ink-2)}
+.ae-menu button:hover{background:var(--k-hover);color:var(--k-ink)}
+.ae-trig{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;padding:.5rem .625rem;border:1px solid var(--k-line);border-radius:.5rem;background:var(--k-side);margin-bottom:.5rem;font-size:13px}
+.ae-trig b{font-weight:600;margin-right:.25rem}
+.ae-trig .x{margin-left:auto}
+.ae-trig input.ae-in{width:5.5rem;padding:.3125rem .5rem;font-size:13px}
+.ae-addrow{display:flex;gap:1rem;flex-wrap:wrap}
+.ae-note{margin:.625rem 0 0;font-size:12px;color:var(--k-muted)}
+.ae-tool{display:flex;align-items:center;gap:1rem;padding:.6875rem 0;border-top:1px solid var(--k-line)}
+.ae-tool:first-of-type{border-top:0}
+.ae-tool div{flex:1;min-width:0}
+.ae-tool b{display:block;font-size:13.5px;font-weight:600}
+.ae-tool p{margin:.125rem 0 0;font-size:12.5px;color:var(--k-muted)}
+.ae-tool .fixed{font-size:12.5px;color:var(--k-muted)}
+.swt{flex:none;position:relative;width:38px;height:22px;border-radius:11px;background:var(--k-hover-neutral);transition:background .15s}
+.swt i{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.swt.on{background:var(--k-accent)}
+.swt.on i{transform:translateX(16px)}
+.swt:focus-visible{outline:2px solid var(--k-accent);outline-offset:2px}
+.ae-deliv{display:flex;flex-wrap:wrap;gap:.5rem}
+.ae-dchip{display:inline-flex;align-items:center;gap:.375rem;height:30px;padding:0 12px;border-radius:15px;border:1px solid var(--k-line-2);font-size:12.5px;font-weight:600;color:var(--k-ink-2)}
+.ae-dchip:hover{border-color:var(--k-accent)}
+.ae-dchip.on{background:var(--k-accent);border-color:var(--k-accent);color:var(--k-on-grad)}
+.ae-dchip.lock{cursor:default}
+.ae-dchip svg{width:.875rem;height:.875rem}
+.ae-bar{position:sticky;bottom:0;z-index:5;display:flex;align-items:center;gap:.5rem;margin:0 auto;max-width:52rem;padding:.75rem 1rem;border:1px solid var(--k-line-2);border-radius:.625rem;background:rgba(38,42,64,.96);backdrop-filter:blur(6px);box-shadow:0 -6px 24px rgba(0,0,0,.3)}
+.ae-bar .st{font-size:12.5px;color:var(--k-muted)}
+.ae-bar .st.dirty{color:var(--k-warn)}
+.ae-bar .sp{flex:1}
+.k-btn:disabled{opacity:.45;cursor:default;pointer-events:none}
+.ae-danger{border-color:rgba(236,123,123,.3)}
+.ae-danger .row{display:flex;flex-wrap:wrap;gap:.5rem}
+
+/* approvals */
+.ap-grid{display:grid;gap:1rem;grid-template-columns:minmax(0,22rem) minmax(0,1fr);align-items:start}
+@media (max-width:980px){.ap-grid{grid-template-columns:minmax(0,1fr)}}
+.ap-list{display:flex;flex-direction:column;gap:.5rem}
+.ap-row{display:flex;flex-direction:column;gap:.375rem;padding:.75rem .875rem;border:1px solid var(--k-line-2);border-radius:.5rem;background:var(--k-surface);width:100%}
+.ap-row:hover{border-color:rgba(255,141,64,.5)}
+.ap-row.on{border-color:var(--k-accent);box-shadow:inset 3px 0 0 var(--k-accent)}
+.ap-row.dec{opacity:.7}
+.ap-row b{font-size:13.5px;font-weight:600;line-height:1.35}
+.ap-row .m{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:12px;color:var(--k-muted)}
+.ap-sec{margin:.75rem 0 .125rem;font-size:12px;font-weight:600;color:var(--k-muted)}
+.ap-detail{border:1px solid var(--k-line-2);border-radius:.625rem;background:var(--k-surface);padding:1.25rem}
+.ap-detail h2{margin:.25rem 0 .5rem;font-size:19px;font-weight:600;letter-spacing:-.01em;line-height:1.3}
+.ap-from{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;font-size:12.5px;color:var(--k-muted)}
+.ap-from button{color:var(--k-accent-ink);font-weight:600}
+.ap-h{margin:1.25rem 0 .5rem;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--k-muted)}
+.ap-why{margin:0;font-size:14px;line-height:1.55;color:var(--k-ink-2)}
+.ap-chart{display:block;width:100%;max-width:520px;height:auto}
+.ap-chart .bar{fill:#5b6179}
+.ap-chart .bar.hi{fill:var(--cb-accent)}
+.ap-chart .bar:hover{fill:#8d94ad}
+.ap-chart .bar.hi:hover{fill:#ffa463}
+.ap-chart text{font-family:var(--cb-mono);font-size:9.5px;fill:#8d94ad}
+.ap-chart text.v{fill:#fff;font-size:10.5px}
+.ap-kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(10rem,1fr));gap:.5rem}
+.ap-kv div{padding:.5rem .625rem;border:1px solid var(--k-line);border-radius:.375rem;background:var(--k-side)}
+.ap-kv small{display:block;font-size:11.5px;color:var(--k-muted)}
+.ap-kv b{font-size:15px;font-weight:600}
+.ap-act{margin:0;padding:.625rem .75rem;border-radius:.375rem;border:1px dashed var(--k-line-2);font-size:13px;color:var(--k-ink-2)}
+.ap-revs{margin:.5rem 0 0;padding:0;list-style:none;font-size:12.5px;color:var(--k-muted)}
+.ap-revs li{padding:.25rem 0}
+.ap-decide{margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--k-line-2)}
+.ap-decide textarea{min-height:4rem}
+.ap-btns{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.625rem}
+.ap-done{display:flex;align-items:center;gap:.5rem;margin-top:1.25rem;padding:.75rem;border-radius:.5rem;background:var(--k-side);font-size:13px}
+
+/* activity */
+.ac-usage{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);margin-bottom:1.25rem}
+@media (max-width:980px){.ac-usage{grid-template-columns:minmax(0,1fr)}}
+.ac-card{border:1px solid var(--k-line-2);border-radius:.625rem;background:var(--k-surface);padding:1rem}
+.ac-card h3{margin:0 0 .125rem;font-size:13px;font-weight:600;color:var(--k-ink-2)}
+.ac-big{font-size:28px;font-weight:300;letter-spacing:-.01em}
+.ac-big small{font-size:14px;color:var(--k-muted);margin-left:.375rem}
+.ac-track{height:8px;border-radius:4px;background:var(--k-hover-neutral);overflow:hidden;margin:.5rem 0 .375rem}
+.ac-track i{display:block;height:100%;border-radius:4px;background:var(--k-grad)}
+.ac-note{font-size:12px;color:var(--k-muted);margin:0}
+.ac-bars{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.375rem .75rem;align-items:center;font-size:12.5px;margin-top:.5rem}
+.ac-bars .b{height:8px;border-radius:0 4px 4px 0;background:var(--cb-accent);min-width:2px}
+.ac-bars .v{font-family:var(--cb-mono);font-size:11.5px;color:var(--k-muted);text-align:right}
+.ac-bars button{color:var(--k-ink-2);text-align:left;white-space:nowrap}
+.ac-bars button:hover{color:var(--k-accent-ink)}
+select.k-select{appearance:none;-webkit-appearance:none;padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239c9fb2' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;cursor:pointer}
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Chakra+Petch:wght@500;600&family=JetBrains+Mono:wght@400;500&display=swap">
 
 <div id="demobar">
   <span class="tag">Ana prototype</span><b>Option 1 · Ana-first</b>
@@ -645,7 +896,7 @@ const el=id=>document.getElementById(id);
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 let toastTimer;
 function toast(msg){document.querySelectorAll('.toast').forEach(t=>t.remove());const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.remove(),2600)}
-function pageCtx(){return({library:'Analytical library · All items',cerebrum:'Cerebrum · Kinetic graph',agents:'Agents',conversations:'Conversations'})[S.page]||null}
+function pageCtx(){return({library:'Analytical library · All items',cerebrum:'Cerebrum · Kinetic graph',agents:(S.ag&&S.ag.view==='detail'&&agById(S.ag.id))?'Agents · '+agById(S.ag.id).name:'Agents',conversations:'Conversations'})[S.page]||null}
 
 /* ============ trust layer: confidence, citations, sources, feedback ============ */
 const TIERS={
@@ -980,16 +1231,6 @@ function cerebrumHTML(){
   </div></div>`;
 }
 
-function agentsHTML(){
-  return headHTML('Agents')+`<div class="k-scroll"><div class="k-wrap k-wrap--std">
-  <div class="k-pagehead"><div style="display:flex;align-items:center;gap:.5rem">${ic('bot')}<h1 class="k-h1">Agents</h1></div>
-    <div class="ml"><div class="k-seg"><button class="on">${ic('layout-grid')}Cards</button><button data-act="Table view is mocked in this prototype">${ic('list')}Table</button></div>
-    <button class="k-btn k-btn--primary" data-act="New agent is mocked in this prototype">${ic('plus')}New agent</button></div></div>
-  <div class="k-tabs">${[['My agents',0],['Approvals',0],['Activity',null]].map(([t,n])=>`<button class="k-tab${S.agentsTab===t?' on':''}" data-agtab="${t}">${t}${n!=null?`<span class="k-count">${n}</span>`:''}</button>`).join('')}</div>
-  <div class="k-empty"><p class="k-empty__title">No agents yet.</p><p>Create one with New agent, or ask the assistant in Agentic mode to create an agent for you.</p></div>
-  </div></div>`;
-}
-
 function conversationsHTML(){
   const n=(S.thread.length?1:0)+(S.lastThread?1:0);
   return headHTML('Conversations')+`<div class="k-scroll"><div class="k-wrap k-wrap--lib">
@@ -1152,6 +1393,7 @@ function render(){
   if(S.panelOpen&&!S.thread.length&&!S.chips.length){const c=pageCtx();if(c){S.chips=[c];panel.innerHTML=panelHTML()}}
   for(const sc of document.querySelectorAll('#panel .k-scroll, #chatScroll')){const v=_keep&&(sc.id==='chatScroll'?_keep.chat:_keep.panel);sc.scrollTop=v!=null?v:sc.scrollHeight}
   if(S.page==='cerebrum')requestAnimationFrame(drawGalaxy);
+  if(S.page==='agents'&&typeof agDrawNow==='function')agDrawNow();
   if(S.canvas&&S.canvas.type==='sources'&&S.canvas.view==='trace')requestAnimationFrame(drawTrace);else clearTimeout(traceTimer);
 }
 
@@ -1250,7 +1492,6 @@ document.addEventListener('click',e=>{
   if(b.dataset.libseg){S.libSeg=b.dataset.libseg;render();return}
   if(b.dataset.ceretab){S.cereTab=b.dataset.ceretab;if(b.dataset.ceretab!=='Kinetic graph')toast('Only the Kinetic graph tab is built in this prototype');S.cereTab='Kinetic graph';render();return}
   if(b.dataset.ceregroup){S.cereGroup=b.dataset.ceregroup;render();return}
-  if(b.dataset.agtab){S.agentsTab='My agents';toast('Only My agents is built in this prototype');render();return}
   if(b.dataset.convchip){S.convChip=b.dataset.convchip;render();return}
   if(b.dataset.act){toast(b.dataset.act);return}
   if(b.classList.contains('cstop')){const m=[...S.thread].reverse().find(x=>x.role==='run'&&!x.done);if(m){m.stopped=true;m.done=true;m.end=Date.now();clearInterval(m.timer);S.streaming=false;render();focusComposer()}return}
@@ -1265,5 +1506,732 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&!e.shiftKey&&e.target.classList&&e.target.classList.contains('cinput')){e.preventDefault();send(e.target.value)}
 });
 window.addEventListener('resize',()=>{if(S.page==='cerebrum')drawGalaxy();if(el('trace'))drawTrace()});
+
+/* ============ AGENTS: live maps (lot-map idea on the Cerebrum stage) ============ */
+Object.assign(IC,Object.fromEntries(Object.entries({
+ 'user':'<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ 'cpu':'<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>',
+ 'zap':'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+ 'receipt':'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+ 'circle-dollar-sign':'<circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/>',
+ 'layout-dashboard':'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+ 'circle-check':'<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+ 'play':'<polygon points="6 3 20 12 6 21 6 3"/>',
+ 'pause':'<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',
+ 'rotate-ccw':'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+ 'trash-2':'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+ 'activity':'<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+ 'calendar':'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
+ 'mail':'<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+ 'hash':'<line x1="4" x2="20" y1="9" y2="9"/><line x1="4" x2="20" y1="15" y2="15"/><line x1="10" x2="8" y1="3" y2="21"/><line x1="16" x2="14" y1="3" y2="21"/>',
+ 'clock':'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+ 'map':'<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>'
+}).filter(([k])=>!IC[k])));
+
+const AGX={grounding:[90,169,255],governance:[255,196,90],agent:[171,140,255],exec:[255,140,70],accent:[255,138,61],you:[214,220,240],bad:[255,110,110],good:[126,224,160]};
+const STN={you:{l:'You',h:'you',i:'user'},kinetic:{l:'Kinetic',h:'agent',i:'cpu'},skills:{l:'Skills',h:'agent',i:'zap'},cerebrum:{l:'Cerebrum',h:'governance',i:'brain'},
+ claims:{l:'Claims',h:'grounding',i:'file-text'},remit:{l:'Remittance',h:'grounding',i:'receipt'},charges:{l:'Charges',h:'grounding',i:'circle-dollar-sign'},
+ superset:{l:'Superset',h:'exec',i:'layout-dashboard'},library:{l:'Library',h:'exec',i:'library'},approvals:{l:'Approvals',h:'governance',i:'circle-check'}};
+const RING=['you','kinetic','cerebrum','approvals','library','superset','charges','remit','claims','skills'];
+const FLEET_RING=['you','cerebrum','approvals','library','superset','charges','remit','claims','skills'];
+const FREQ={daily:'Every day',weekdays:'Weekdays',weekly:'Every Monday',monthly:'First of the month'};
+const TIMES=['6:00 AM','7:00 AM','8:00 AM','9:00 AM','12:00 PM','5:00 PM'];
+const AEVENTS={remittance:'New remittance file arrives',threshold:'A metric crosses a threshold'};
+const ARCH=['Denial driver analysis','Late charge driver analysis','Payer receivables','Modifier denial analysis'];
+const TMETRICS=['Initial denial rate','Charge lag (days)','A/R over 90 share','Clean claim rate'];
+const ATOOLS=[['query','Query governed metrics','Reads Certified and Calculated metrics from Cerebrum',true],['dashboard','Create Superset dashboards','Builds a dashboard from a finding and adds it to the Analytical library'],['report','Generate reports','Writes a report to the Analytical library, linked to the run'],['recommend','Open recommendations for approval','Sends a recommended action to Agents › Approvals'],['propose','Propose Cerebrum changes','Drafts a metric, term or population change for a reviewer']];
+const CAPS=[200,400,800];
+const KIND={ok:['ok','Completed'],needs:['warn','Needs approval'],budget:['bad','Stopped: token budget'],failed:['bad','Partial: data gap']};
+const TRAVEL=560;
+
+const AGENTS=[
+ {id:'denials',code:'DENIALS',name:'Denial driver monitor',status:'active',
+  instr:'Every Monday, rank the top denial categories by payer and flag any that moved more than 2 points.',
+  skills:['Denial driver analysis'],triggers:[{type:'schedule',freq:'weekly',time:'7:00 AM'}],
+  tools:{query:true,dashboard:true,report:true,recommend:true,propose:false},approval:true,cap:400,email:true,slack:false,memory:true,next:'Mon, Nov 23, 7:00 AM',
+  plan:{trig:'Schedule · Every Monday 7:00 AM',terms:'Term · "moved" = week-over-week points',metric:'Metric · Initial denial rate (Certified)',
+   data:[['claims','Claims 837 · weeks 45 and 46',2300,46],['remit','Remits 835 · CARC groups',2700,52]],drill:['remit','Drill · Medi-Cal managed care by CARC',1500,38],
+   report:'Report · Denial movers, week 46',dash:'Dashboard · Denial movers by payer',rec:'Route 212 aged Commercial B accounts to appeals queue',recT:'claims',
+   gap:'Remits 835 · Medi-Cal October not imported',
+   find:['CO-197 prior auth missing, Medi-Cal managed care: 6.1% to 9.4% (+3.3 pts)','CO-16 missing information, Commercial B: 3.8% to 6.2% (+2.4 pts)','CO-45 contractual, Blue Shield: down 2.1 pts','Initial denial rate overall 11.2% (+0.6 pts)']}},
+ {id:'ar90',code:'A/R 90+',name:'AR Over 90 Share',status:'active',from:'ar-over-90-share',
+  instr:'Answer this again and say what changed since the last run: What is A/R over 90 days in dollars, and what percent of total A/R does it represent?',
+  skills:['Payer receivables'],triggers:[{type:'schedule',freq:'daily',time:'7:00 AM'}],
+  tools:{query:true,dashboard:false,report:true,recommend:false,propose:false},approval:true,cap:200,email:true,slack:false,memory:true,next:'Wed, Nov 18, 7:00 AM',
+  plan:{trig:'Schedule · Every day 7:00 AM',terms:'Term · "A/R over 90" = open balance aged > 90 days',metric:'Metric · A/R over 90 share (Certified)',
+   data:[['claims','Open A/R · aging buckets',2100,40],['remit','Payments posted since last run',1900,30]],drill:['claims','Payer split · top 10 by 90+ dollars',1300,28],
+   report:'Report · A/R over 90, Nov 17',gap:'Payments · Nov 16 batch not posted yet',
+   find:['A/R over 90: $18.4M, 22.6% of total A/R ($81.4M)','Up 0.4 pts since yesterday, led by Medi-Cal managed care (+$0.6M)','Commercial B 90+ down $0.2M after appeals posted']}},
+ {id:'late',code:'LATE CHG',name:'Late charge watch',status:'active',
+  instr:'Every weekday, scan charge posting lag by department and open a conversation when any facility crosses 4 days.',
+  skills:['Late charge driver analysis'],triggers:[{type:'schedule',freq:'weekdays',time:'6:00 AM'},{type:'event',event:'threshold',metric:'Charge lag (days)',op:'above',value:'4'}],
+  tools:{query:true,dashboard:false,report:true,recommend:true,propose:false},approval:true,cap:400,email:false,slack:true,memory:false,next:'Wed, Nov 18, 6:00 AM',
+  plan:{trig:'Schedule · Weekdays 6:00 AM',terms:'Term · "posting lag" = service date to post date',metric:'Metric · Charge lag in days (Calculated)',
+   data:[['charges','Charges · posted last 5 days',2200,44],['claims','Claims held for late charges',1600,26]],drill:['charges','Drill · Radiology by ordering unit',1400,30],
+   report:'Report · Posting lag by department',rec:'Open conversation: Radiology posting lag crossed 4 days',recT:'you',gap:'Charges · Facility 19 feed delayed',
+   find:['Radiology posting lag 4.6 days (threshold 4)','Interventional Radiology drives 61% of late charges','Late charges are holding 38 claims worth $412K']}},
+ {id:'modifier',code:'MODIFIER',name:'Modifier edit candidates',status:'active',
+  instr:'When a new remittance file arrives, propose edit rules from modifier denial evidence. Nothing ships without a reviewer.',
+  skills:['Modifier denial analysis'],triggers:[{type:'event',event:'remittance'}],
+  tools:{query:true,dashboard:false,report:true,recommend:true,propose:true},approval:true,cap:400,email:false,slack:false,memory:true,next:'On next remittance file',
+  plan:{trig:'Event · New 835 file arrived (14,212 lines)',terms:'Term · modifier combinations by CPT',metric:'Metric · Modifier denial rate (Calculated)',
+   data:[['remit','Remit 835 · new file, CARC 4 and 197',2400,50],['claims','Claims 837 · CPT and modifier lines',2200,48]],drill:['claims','Rank CPT × modifier × facility',1600,40],
+   report:'Report · Modifier edit candidates',rec:'Add edit rule: CPT 36415 with modifier 59 at Facility 4',recT:'claims',prop:'Proposal · widen "take-back" to Recoupment',gap:'Remit 835 · file truncated at line 9,880',
+   find:['CPT 36415 with modifier 59 at Facility 4: 41% denied (CARC 4)','3 candidate edit rules, est. $186K a quarter avoidable','1 vocabulary change sent for review']}},
+ {id:'priorauth',code:'PRIOR AUTH',name:'Prior auth denial watch',status:'active',
+  instr:'When the initial denial rate for CO-197 (prior authorization missing) rises above 10% for any payer, find the services and ordering departments behind it.',
+  skills:['Denial driver analysis'],triggers:[{type:'event',event:'threshold',metric:'Initial denial rate',op:'above',value:'10%'}],
+  tools:{query:true,dashboard:false,report:true,recommend:true,propose:false},approval:true,cap:200,email:true,slack:false,memory:false,next:'When CO-197 > 10%',
+  plan:{trig:'Event · CO-197 rate crossed 10% (Medi-Cal managed care)',terms:'Term · CO-197 = prior authorization missing',metric:'Metric · Initial denial rate (Certified)',
+   data:[['remit','Remits 835 · CO-197 lines, 90 days',2600,70],['claims','Claims 837 · ordering departments',2400,66]],drill:['claims','Drill · services × departments × payer',2000,60],
+   report:'Report · Prior auth denials',rec:'Add prior auth check for MRI brain orders in Neurology',recT:'claims',gap:'Orders · referral data not in Cerebrum',
+   find:['CO-197 at Medi-Cal managed care is 10.8%','MRI brain (70551-70553) ordered by Neurology: 34% of CO-197 dollars','Auth requests filed after the service in 62% of these']}},
+ {id:'payerlag',code:'PAYER LAG',name:'Payer timing drift',status:'paused',
+  instr:'On the first of each month, compare payment lag against the prior quarter for each payer and flag payers paying 5 or more days slower.',
+  skills:['Payer receivables'],triggers:[{type:'schedule',freq:'monthly',time:'8:00 AM'}],
+  tools:{query:true,dashboard:true,report:true,recommend:false,propose:false},approval:true,cap:400,email:true,slack:false,memory:true,next:'Tue, Dec 1, 8:00 AM',
+  plan:{trig:'Schedule · First of the month 8:00 AM',terms:'Term · "payment lag" = submission to payment date',metric:'Metric · Days to payment (Calculated)',
+   data:[['remit','Remits 835 · payment dates, 2 quarters',2400,48],['claims','Claims 837 · submission dates',2000,40]],drill:['remit','Drill · payers over 5 days slower',1300,26],
+   report:'Report · Payer timing drift, October',dash:'Dashboard · Payment lag by payer',gap:'Remits 835 · Health Net September missing',
+   find:['Health Net paying 7.2 days slower than Q2','Anthem Blue Cross back to baseline','Median lag across payers 23.4 days (+1.1)']}}
+];
+const HIST={denials:[[47,'needs','Mon, Nov 16 · 7:00 AM'],[46,'ok','Mon, Nov 9 · 7:00 AM'],[45,'ok','Mon, Nov 2 · 7:00 AM'],[44,'needs','Mon, Oct 26 · 7:00 AM'],[43,'ok','Mon, Oct 19 · 7:00 AM'],[42,'failed','Mon, Oct 12 · 7:00 AM'],[41,'ok','Mon, Oct 5 · 7:00 AM'],[40,'ok','Mon, Sep 28 · 7:00 AM']],
+ ar90:[[12,'ok','Tue, Nov 17 · 7:00 AM'],[11,'ok','Mon, Nov 16 · 7:00 AM'],[10,'ok','Sun, Nov 15 · 7:00 AM'],[9,'failed','Sat, Nov 14 · 7:00 AM'],[8,'ok','Fri, Nov 13 · 7:00 AM'],[7,'ok','Thu, Nov 12 · 7:00 AM'],[6,'ok','Wed, Nov 11 · 7:00 AM']],
+ late:[[112,'needs','Tue, Nov 17 · 6:00 AM'],[111,'ok','Mon, Nov 16 · 6:00 AM'],[110,'ok','Fri, Nov 13 · 6:00 AM'],[109,'ok','Thu, Nov 12 · 6:00 AM'],[108,'ok','Wed, Nov 11 · 6:00 AM'],[107,'ok','Tue, Nov 10 · 6:00 AM'],[106,'needs','Mon, Nov 9 · 6:00 AM'],[105,'ok','Fri, Nov 6 · 6:00 AM']],
+ modifier:[[31,'needs','Tue, Nov 17 · 2:14 PM'],[30,'needs','Fri, Nov 13 · 11:02 AM'],[29,'ok','Tue, Nov 10 · 3:40 PM'],[28,'needs','Fri, Nov 6 · 9:18 AM'],[27,'ok','Tue, Nov 3 · 1:55 PM'],[26,'ok','Fri, Oct 30 · 10:21 AM']],
+ priorauth:[[9,'budget','Tue, Nov 17 · 10:42 AM'],[8,'ok','Thu, Nov 5 · 4:10 PM'],[7,'needs','Mon, Oct 26 · 9:30 AM'],[6,'ok','Wed, Oct 14 · 2:05 PM']],
+ payerlag:[[3,'ok','Sun, Nov 1 · 8:00 AM'],[2,'ok','Thu, Oct 1 · 8:00 AM'],[1,'ok','Tue, Sep 1 · 8:00 AM']]};
+AGENTS.forEach(a=>a.runs=(HIST[a.id]||[]).map(([num,kind,when])=>({num,kind,when})));
+
+const APPROVALS=[
+ {id:'ap1',what:'Add edit rule: CPT 36415 with modifier 59 at Facility 4',from:'modifier',run:31,support:'Calculated',age:'2h',target:'claims',
+  why:'CPT 36415 billed with modifier 59 at Facility 4 was denied 41% of the time over the last 8 weeks (CARC 4, modifier inconsistent with procedure). Other facilities deny the same combination under 3%.',
+  series:[12,18,22,29,33,38,40,41],unit:'% denied',label:'Denial rate, CPT 36415 + 59, Facility 4',rows:[['Lines billed, 8 weeks','1,284'],['Denied lines','526'],['Denied dollars','$61.2K'],['Avoidable per quarter','$94K']],
+  action:'Adds a pre-bill edit in the claim scrubber. Lines with this combination hold for coder review.',done:'added the pre-bill edit',revs:[]},
+ {id:'ap2',what:'Route 212 aged Commercial B accounts to appeals queue',from:'denials',run:47,support:'Directly supported',age:'5h',target:'claims',
+  why:'CO-16 (missing information) denials at Commercial B rose from 3.8% to 6.2% in two weeks. 212 accounts aged 30 to 60 days are still inside the appeal window.',
+  series:[3.6,3.9,3.7,3.8,4.1,4.6,5.5,6.2],unit:'%',label:'CO-16 denial rate, Commercial B',rows:[['Accounts','212'],['Balance','$1.38M'],['Median days left to appeal','34'],['Expected recovery at 58% overturn','$0.80M']],
+  action:'Moves the 212 accounts to the Appeals worklist with the denial reason and remit line attached.',done:'routed 212 accounts to Appeals',revs:[]},
+ {id:'ap3',what:'Open conversation: Radiology posting lag crossed 4 days',from:'late',run:112,support:'Directly supported',age:'1d',target:'you',
+  why:'Radiology charge posting lag rose for six straight weeks and crossed the 4-day threshold. Interventional Radiology drives 61% of the late charges.',
+  series:[2.8,3.0,3.1,3.4,3.6,3.9,4.2,4.6],unit:' d',label:'Posting lag in days, Radiology',rows:[['Late charges','1,940'],['Claims on hold','38'],['Dollars on hold','$412K']],
+  action:'Opens a conversation with the Radiology charge capture leads, with these findings attached.',done:'opened the conversation with Radiology',revs:[]},
+ {id:'ap4',what:'Cerebrum change: widen "take-back" to include Recoupment',from:'modifier',run:30,support:'Assisted',age:'1d',target:'cerebrum',
+  why:'People asked about "take-backs" 9 times this month. 3 answers missed recoupment lines (CARC 108 and PLB WO adjustments) because the term does not cover them.',
+  series:[1,0,2,1,3,2,4,9],unit:'',label:'Questions mentioning take-back, by week',rows:[['Questions affected','9'],['Answers that missed recoupment','3']],
+  action:'Sends the vocabulary change to a Cerebrum reviewer. Nothing changes until it is published.',done:'sent the change to a Cerebrum reviewer',revs:[]}
+];
+
+/* ---- state ---- */
+S.ag={view:'list',tab:'My agents',layout:'cards',q:'',chip:'All',id:null,dtab:'Live',hero:true,apSel:null,apNote:'',draft:null,del:null,menu:null,actAgent:'all',actStatus:'All',hoverId:null};
+const LIVE={}; let PLAY=null, FX=[];
+const agById=id=>AGENTS.find(a=>a.id===id);
+const pendingFor=id=>APPROVALS.filter(x=>!x.decided&&x.from===id).length;
+function rng(seed){let s=(Math.abs(Math.floor(seed))%2147483646)+1;return()=>(s=s*16807%2147483647)/2147483647}
+function fmtMs(ms){return ms<1000?Math.round(ms)+' ms':(ms/1000).toFixed(1)+' s'}
+function fmtK(k){return k>=1000?(k/1000).toFixed(2)+'M':Math.round(k)+'K'}
+function nextText(a){return a.status==='paused'?'Paused':/^(On|When)/.test(a.next)?'Runs '+a.next.charAt(0).toLowerCase()+a.next.slice(1):'Next run '+a.next}
+function trigText(t){return t.type==='schedule'?`${FREQ[t.freq]} at ${t.time}`:t.event==='threshold'?`When ${t.metric} goes ${t.op} ${t.value}`:AEVENTS.remittance}
+function schedText(a){return a.triggers.map(trigText).join(' · ')||'No trigger'}
+function delivText(a){return 'In Kinetic'+(a.email&&a.slack?', email and Slack':a.email?' and email to you':a.slack?' and Slack':'')}
+function cfgOf(a){return JSON.parse(JSON.stringify({id:a.id,name:a.name,instr:a.instr,skills:a.skills,triggers:a.triggers,tools:a.tools,approval:a.approval,cap:a.cap,email:a.email,slack:a.slack,memory:a.memory}))}
+function agStatus(a){
+  if(LIVE[a.id])return ['run','Running'];
+  if(a.status==='paused')return ['paused','Paused'];
+  const r=a.runs[0];
+  if(r&&r.kind==='budget')return ['bad','Stopped at budget'];
+  if(pendingFor(a.id))return ['warn','Needs approval'];
+  if(r&&r.kind==='failed')return ['warn','Partial data'];
+  return ['ok','Active'];
+}
+
+/* ---- run scripts: one timeline per run, every view derives its state from the run clock ---- */
+function buildScript(a,kind,cfg,num){
+  const p=a.plan, ev=[], R=rng(num*31+a.id.length*7); let t=0;
+  const add=(st,l,dur,tok,x)=>{const e=Object.assign({st,l,t,dur,tok},x||{});ev.push(e);return e};
+  add('you',p.trig,0,0,{msg:1});t+=260;
+  add('kinetic','step 1 · reading the instructions',650,14);t+=770;
+  (cfg.skills.length?cfg.skills:['No archetype, open analysis']).forEach(s=>{add('skills',s,520,6);t+=580});
+  add('cerebrum',p.terms,760,10);t+=830;
+  add('cerebrum',p.metric,620,8);t+=700;
+  add('kinetic','step 2 · planning queries',560,16);t+=680;
+  let mx=0;const par=p.data.length;
+  p.data.forEach((d,i)=>{const e=add(d[0],d[1],d[2]+Math.round(R()*400),d[3],{par,pi:i});if(kind==='failed'&&i===par-1){e.err=1;e.l=p.gap;e.dur=1100}mx=Math.max(mx,e.dur)});
+  t+=mx+160;
+  if(kind==='failed'){
+    add('kinetic','Honest stop · answering from partial context',700,12);t+=820;
+    if(cfg.tools.report){add('library',p.report+' (partial)',700,8);t+=780}
+    add('you','Delivered partial · data gap stated first',0,0,{ans:1});
+  }else{
+    add('kinetic','step 3 · reading results',600,22);t+=720;
+    add(p.drill[0],p.drill[1],p.drill[2],p.drill[3]);t+=p.drill[2]+140;
+    if(kind==='budget'){
+      add('kinetic','step 4 · composing findings',1500,30);t+=1500;
+      add('kinetic','Stopped · token budget reached',0,0,{err:1,stop:1});
+    }else{
+      add('kinetic','step 4 · composing findings',950,30);t+=1060;
+      if(cfg.tools.report){add('library',p.report,700,8);t+=780}
+      if(cfg.tools.dashboard&&p.dash){add('superset',p.dash,1100,10);t+=1180}
+      if(kind==='needs'&&cfg.tools.recommend&&p.rec){add('approvals',p.rec,900,6,{ask:1});t+=980}
+      if(cfg.tools.propose&&p.prop){add('cerebrum',p.prop,800,6);t+=880}
+      add('you','Delivered · '+delivText(cfg).replace(' to you',''),0,0,{ans:1});
+    }
+  }
+  const sum=ev.reduce((s,e)=>s+e.tok,0)||1;
+  const target=kind==='budget'?cfg.cap:kind==='failed'?cfg.cap*.3:cfg.cap*(.38+R()*.24);
+  ev.forEach(e=>e.tok*=target/sum);
+  return ev;
+}
+function mkRun(a,kind,num,o){
+  o=o||{};const cfg=o.cfg||a;const ev=buildScript(a,kind,cfg,num);const last=ev[ev.length-1];
+  return {a,kind,num,ev,cfg,total:last.t+last.dur+2100,end:last.t,clock:o.clock||0,speed:1,playing:true,live:!!o.live,test:!!o.test};
+}
+function tokAt(r,c){let s=0;for(const e of r.ev){if(c<e.t)continue;s+=e.dur?e.tok*Math.min(1,(c-e.t)/e.dur):e.tok}return s}
+function hstat(a,h){if(h.secs==null){const r=mkRun(a,h.kind,h.num);h.secs=r.end/1000;h.tok=Math.round(tokAt(r,r.total))}return h}
+function runDone(r){return r.clock>=r.end}
+function headline(a,h){return h.kind==='budget'?'Stopped while composing findings':h.kind==='failed'?'Gap: '+a.plan.gap:a.plan.find[h.num%Math.min(2,a.plan.find.length)]}
+const MON={Sep:8,Oct:9,Nov:10,Dec:11};
+function whenTs(h){if(h.ts)return h.ts;const m=/(\w{3}) (\d+) · (\d+):(\d\d) ([AP])M/.exec(h.when);if(!m)return h.ts=Date.now();let hr=+m[3]%12+(m[5]==='P'?12:0);return h.ts=new Date(2026,MON[m[1]],+m[2],hr,+m[4]).getTime()}
+
+function startLive(a,kind,o){
+  o=o||{};if(LIVE[a.id])return LIVE[a.id];
+  if(!kind){const R=Math.random();kind=a.tools.recommend&&a.plan.rec&&R<.45?'needs':(a.id==='priorauth'&&R>.7?'budget':'ok')}
+  const num=(a.runs[0]?a.runs[0].num:0)+1;
+  const r=mkRun(a,kind,num,{live:true,cfg:o.cfg,clock:o.clock,test:o.test});
+  LIVE[a.id]=r;agSoft();return r;
+}
+function finishRun(r){
+  const a=r.a;delete LIVE[a.id];r.live=false;
+  if(!r.test){
+    a.runs.unshift({num:r.num,kind:r.kind,when:'Today · just now',ts:Date.now(),secs:r.end/1000,tok:Math.round(tokAt(r,r.total))});
+    if(r.kind==='needs'&&a.plan.rec&&!APPROVALS.some(x=>!x.decided&&x.what===a.plan.rec)){
+      const R=rng(r.num);let v=2+R()*2;const series=Array.from({length:8},()=>+(v+=R()*1.2).toFixed(1));
+      APPROVALS.unshift({id:'ap'+Date.now(),what:a.plan.rec,from:a.id,run:r.num,support:'Calculated',age:'just now',target:a.plan.recT||'claims',why:a.plan.find.slice(0,2).join('. ')+'.',series,unit:'',label:'Signal behind the recommendation, last 8 weeks',rows:[['Run','#'+r.num],['Tokens',fmtK(tokAt(r,r.total))]],action:'Applies the recommended action after approval.',done:'applied the recommendation',revs:[]});
+    }
+  }
+  agSoft();
+}
+function agRender(){const sc=document.querySelector('#page .k-scroll');const top=sc?sc.scrollTop:0;render();const s2=document.querySelector('#page .k-scroll');if(s2)s2.scrollTop=top}
+function agSoft(){
+  if(S.page!=='agents')return;
+  if(S.ag.view==='detail'&&S.ag.dtab==='Settings')return;
+  const ae=document.activeElement;if(ae&&/INPUT|TEXTAREA|SELECT/.test(ae.tagName))return;
+  agRender();
+}
+function bindPlay(num){
+  const a=agById(S.ag.id);if(!a){PLAY=null;return}
+  if(num==null&&LIVE[a.id]){PLAY=LIVE[a.id];return}
+  const h=num!=null?a.runs.find(r=>r.num===num):a.runs[0];
+  PLAY=h?mkRun(a,h.kind,h.num):null;
+}
+function openAgent(id,tab){S.page='agents';S.ag.view='detail';S.ag.id=id;S.ag.dtab=tab||'Live';S.ag.draft=null;S.ag.menu=null;bindPlay();render()}
+
+/* ---- drawing primitives ---- */
+const DPR=Math.min(2,window.devicePixelRatio||1);
+const RMOTION=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const P2D={};
+function icPath(name){
+  if(P2D[name])return P2D[name];let d='';
+  (IC[name]||'').replace(/<(\w+)([^>]*?)\/?>/g,(_,tag,at)=>{const A={};at.replace(/([\w-]+)="([^"]*)"/g,(_,k,v)=>A[k]=v);
+    if(tag==='path')d+=A.d+' ';
+    else if(tag==='circle'){const cx=+A.cx,cy=+A.cy,r=+A.r;d+=`M${cx+r} ${cy}A${r} ${r} 0 1 1 ${cx-r} ${cy}A${r} ${r} 0 1 1 ${cx+r} ${cy}Z `}
+    else if(tag==='rect'){const x=+(A.x||0),y=+(A.y||0),w=+A.width,h=+A.height,r=+(A.rx||0);d+=r?`M${x+r} ${y}H${x+w-r}A${r} ${r} 0 0 1 ${x+w} ${y+r}V${y+h-r}A${r} ${r} 0 0 1 ${x+w-r} ${y+h}H${x+r}A${r} ${r} 0 0 1 ${x} ${y+h-r}V${y+r}A${r} ${r} 0 0 1 ${x+r} ${y}Z `:`M${x} ${y}h${w}v${h}h${-w}Z `}
+    else if(tag==='line')d+=`M${A.x1} ${A.y1}L${A.x2} ${A.y2} `;
+    else if(tag==='polyline'||tag==='polygon'){const p=A.points.trim().split(/[\s,]+/).map(Number);d+='M'+p[0]+' '+p[1];for(let i=2;i<p.length;i+=2)d+='L'+p[i]+' '+p[i+1];d+=tag==='polygon'?'Z ':' '}});
+  return P2D[name]=new Path2D(d);
+}
+function fitCanvas(cv){const r=cv.getBoundingClientRect();const w=Math.round(r.width),h=Math.round(r.height);if(cv._w!==w||cv._h!==h){cv._w=w;cv._h=h;cv.width=w*DPR;cv.height=h*DPR;cv._stars=null}return w>0&&h>0}
+let _aura=null;
+function auraSprite(){
+  if(_aura)return _aura;const c=document.createElement('canvas'),N=640;c.width=c.height=N;const g=c.getContext('2d');const r=rng(11);
+  const hues=[AGX.grounding,AGX.governance,AGX.agent,AGX.exec,AGX.agent,AGX.grounding];
+  for(let i=0;i<54;i++){const col=hues[i%hues.length];const a=r()*6.283,d=N*(.1+r()*.3);const x=N/2+Math.cos(a)*d,y=N/2+Math.sin(a)*d,rad=N*(.06+r()*.14);
+    const gr=g.createRadialGradient(x,y,0,x,y,rad);gr.addColorStop(0,`rgba(${col},${.1+r()*.1})`);gr.addColorStop(.5,`rgba(${col},.035)`);gr.addColorStop(1,`rgba(${col},0)`);
+    g.fillStyle=gr;g.beginPath();g.ellipse(x,y,rad,rad*(.6+r()*.6),r()*3.14,0,6.283);g.fill()}
+  g.globalCompositeOperation='destination-in';const m=g.createRadialGradient(N/2,N/2,N*.1,N/2,N/2,N/2);m.addColorStop(0,'rgba(0,0,0,1)');m.addColorStop(.7,'rgba(0,0,0,.6)');m.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=m;g.fillRect(0,0,N,N);
+  return _aura=c;
+}
+function stageBg(g,W,H,cv,now,energy,cx,cy){
+  const vg=g.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*.72);vg.addColorStop(0,'#11142b');vg.addColorStop(1,'#07080f');g.fillStyle=vg;g.fillRect(0,0,W,H);
+  if(!cv._stars){const r=rng(7),s=[];for(let i=0;i<Math.round(W*H/2400);i++)s.push([r()*W,r()*H,r()*.45+.08,r()*20]);cv._stars=s}
+  for(const [x,y,a,p] of cv._stars){g.fillStyle=`rgba(200,210,255,${(a*(.65+.35*Math.sin(now/1900+p))).toFixed(3)})`;g.fillRect(x,y,1,1)}
+  const size=Math.min(W,H)*1.45;g.save();g.globalCompositeOperation='lighter';g.globalAlpha=(.5+.14*Math.sin(now/3300))*(.75+.45*energy);
+  g.translate(cx,cy);g.rotate(RMOTION?0:now/95000);g.drawImage(auraSprite(),-size/2,-size/2,size,size);g.restore();
+}
+function halo(g,x,y,R,rgb,a){if(R<1||a<=0)return;const gr=g.createRadialGradient(x,y,0,x,y,R);gr.addColorStop(0,`rgba(${rgb},${a})`);gr.addColorStop(.5,`rgba(${rgb},${a*.3})`);gr.addColorStop(1,`rgba(${rgb},0)`);g.save();g.globalCompositeOperation='lighter';g.fillStyle=gr;g.beginPath();g.arc(x,y,R,0,6.284);g.fill();g.restore()}
+function qp(A,B,bend){const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2,dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1;const cx=mx-dy/L*bend,cy=my+dx/L*bend;
+  return u=>{const v=1-u;return [v*v*A[0]+2*v*u*cx+u*u*B[0],v*v*A[1]+2*v*u*cy+u*u*B[1]]}}
+function curve(g,f,u0,u1){g.beginPath();for(let k=0;k<=18;k++){const p=f(u0+(u1-u0)*k/18);k?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1])}}
+function impulse(g,f,u,rgb){
+  const u0=Math.max(0,u-.2),b=f(u),a=f(u0);
+  const gr=g.createLinearGradient(a[0],a[1],b[0],b[1]);gr.addColorStop(0,`rgba(${rgb},0)`);gr.addColorStop(1,`rgba(${rgb},.95)`);
+  g.save();g.globalCompositeOperation='lighter';g.strokeStyle=gr;g.lineWidth=3;g.lineCap='round';curve(g,f,u0,u);g.stroke();
+  const d=g.createRadialGradient(b[0],b[1],0,b[0],b[1],10);d.addColorStop(0,'rgba(255,246,232,1)');d.addColorStop(.35,`rgba(${rgb},.85)`);d.addColorStop(1,`rgba(${rgb},0)`);
+  g.fillStyle=d;g.beginPath();g.arc(b[0],b[1],10,0,6.284);g.fill();g.restore();
+}
+const ease=u=>u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;
+function drawCore(g,x,y,r,now,o){
+  const br=o.running?(.6+.4*Math.sin(now/420)):.3;
+  halo(g,x,y,r*2.8,AGX.accent,.2*br+.08);
+  const f=g.createRadialGradient(x-r*.3,y-r*.35,0,x,y,r);f.addColorStop(0,'#2c1d16');f.addColorStop(.7,'#130f17');f.addColorStop(1,'#0b0b12');
+  g.fillStyle=f;g.beginPath();g.arc(x,y,r,0,6.284);g.fill();g.strokeStyle=`rgba(255,138,61,${.5+.35*br})`;g.lineWidth=1.5;g.stroke();
+  if(o.pct!=null){const rr=r+8;g.strokeStyle='rgba(255,255,255,.08)';g.lineWidth=4;g.beginPath();g.arc(x,y,rr,0,6.284);g.stroke();
+    const col=o.pct>=.9?AGX.bad:o.pct>=.7?AGX.governance:AGX.accent;g.strokeStyle=`rgb(${col})`;g.lineCap='round';g.beginPath();g.arc(x,y,rr,-Math.PI/2,-Math.PI/2+Math.max(.001,Math.min(1,o.pct))*6.283);g.stroke();g.lineCap='butt';
+    if(o.pct>.02)halo(g,x+Math.cos(-Math.PI/2+Math.min(1,o.pct)*6.283)*rr,y+Math.sin(-Math.PI/2+Math.min(1,o.pct)*6.283)*rr,10,col,.6)}
+  g.textAlign='center';g.textBaseline='alphabetic';
+  if(o.top){g.fillStyle=o.topCol||'rgba(232,235,245,.62)';g.font='500 10px "JetBrains Mono",monospace';g.fillText(o.top,x,y-r*.36)}
+  g.fillStyle='#fff';g.font=`600 ${o.big||15}px "Chakra Petch","Inter",sans-serif`;if('letterSpacing' in g)g.letterSpacing='1.5px';g.fillText(o.title,x,y+5);if('letterSpacing' in g)g.letterSpacing='0px';
+  if(o.sub){g.fillStyle='rgba(232,235,245,.5)';g.font='10px "JetBrains Mono",monospace';g.fillText(o.sub,x,y+r*.52)}
+}
+function drawStation(g,x,y,st,o){
+  const rgb=AGX[STN[st].h],r=o.r||22,dim=o.dim?.45:1;
+  if(o.act)halo(g,x,y,r*3.1,rgb,.32+.14*Math.sin(o.now/210));
+  if(o.flash>0)halo(g,x,y,r*2.5,rgb,.45*o.flash);
+  if(o.err)halo(g,x,y,r*2.2,AGX.bad,.22);
+  g.fillStyle='#0c0e18';g.beginPath();g.arc(x,y,r,0,6.284);g.fill();
+  g.lineWidth=o.act?2:1.2;g.strokeStyle=`rgba(${o.err&&!o.act?AGX.bad:rgb},${(o.act?.95:o.uses?.55:.24)*dim})`;g.stroke();
+  const s=(r*.74)/24;g.save();g.translate(x-12*s,y-12*s);g.scale(s,s);g.lineWidth=2;g.lineCap='round';g.lineJoin='round';
+  g.strokeStyle=o.act?'rgba(255,255,255,1)':`rgba(${rgb},${(o.uses?.9:.5)*dim})`;g.stroke(icPath(STN[st].i));g.restore();
+  if(o.act&&o.elapsed!=null){g.lineCap='round';g.strokeStyle=`rgba(${rgb},.95)`;g.lineWidth=2;g.beginPath();g.arc(x,y,r+5,-Math.PI/2,-Math.PI/2+((o.elapsed%6000)/6000)*6.283);g.stroke();
+    g.strokeStyle=`rgba(${rgb},.45)`;g.lineWidth=1;g.beginPath();g.arc(x,y,r+9,-Math.PI/2,-Math.PI/2+((o.elapsed%60000)/60000)*6.283+.02);g.stroke();g.lineCap='butt'}
+  g.textAlign='center';g.textBaseline='alphabetic';g.font='500 11px "JetBrains Mono",monospace';g.fillStyle=o.act?'#fff':`rgba(232,235,245,${.78*dim})`;g.fillText(STN[st].l,x,y+r+18);
+  if(o.count!=null){g.font='10px "JetBrains Mono",monospace';g.fillStyle=`rgba(141,148,173,${.95*dim})`;g.fillText(o.count,x,y+r+31)}
+  if(o.par>1){const bx=x+r*.78,by=y-r*.78;g.fillStyle='#0c0e18';g.beginPath();g.arc(bx,by,9,0,6.284);g.fill();g.strokeStyle=`rgba(${rgb},.9)`;g.lineWidth=1.2;g.stroke();g.fillStyle='#fff';g.font='600 9px "JetBrains Mono",monospace';g.fillText('×'+o.par,bx,by+3)}
+  if(o.err){const bx=x-r*.78,by=y-r*.78;g.fillStyle='rgb(236,90,90)';g.beginPath();g.arc(bx,by,8,0,6.284);g.fill();g.fillStyle='#fff';g.font='600 9px "JetBrains Mono",monospace';g.fillText(o.err,bx,by+3)}
+}
+
+/* ---- per-agent run map ---- */
+function drawAgentMap(cv,run,now){
+  const g=cv.getContext('2d'),W=cv._w,H=cv._h;g.setTransform(DPR,0,0,DPR,0,0);
+  const cx=W/2,cy=H/2+6,R=Math.max(90,Math.min(W/2-66,H/2-60)),c=run.clock,done=runDone(run);
+  stageBg(g,W,H,cv,now,done?.4:1,cx,cy);
+  const pos={};RING.forEach((st,i)=>{const a=-Math.PI/2+i/RING.length*6.283;pos[st]=[cx+Math.cos(a)*R,cy+Math.sin(a)*R*.94]});
+  const used=new Set(run.ev.map(e=>e.st));
+  const S_={};RING.forEach(st=>S_[st]={uses:0,act:0,err:0,flash:0,el:null,lastEnd:-1e9});
+  for(const e of run.ev){if(c<e.t)continue;const s=S_[e.st];s.uses++;if(e.dur&&c<e.t+e.dur){s.act++;s.el=Math.max(s.el||0,c-e.t)}
+    if(e.err)s.err++;const end=e.t+e.dur;if(c>=end)s.lastEnd=Math.max(s.lastEnd,end)}
+  const coreR=Math.max(30,Math.min(54,R*.22));
+  // worn spokes
+  for(const st of RING){const s=S_[st],[x,y]=pos[st],rgb=AGX[STN[st].h];const dx=x-cx,dy=y-cy,L=Math.hypot(dx,dy);
+    const a0=[cx+dx/L*(coreR+10),cy+dy/L*(coreR+10)],a1=[x-dx/L*24,y-dy/L*24];
+    const gr=g.createLinearGradient(a0[0],a0[1],a1[0],a1[1]);const al=(.08+Math.min(.42,s.uses*.07))*(used.has(st)?1:.5);
+    gr.addColorStop(0,`rgba(255,138,61,${al*.8})`);gr.addColorStop(1,`rgba(${rgb},${al})`);
+    g.strokeStyle=gr;g.lineWidth=1+Math.min(4,Math.log2(1+s.uses)*1.3);g.beginPath();g.moveTo(a0[0],a0[1]);g.lineTo(a1[0],a1[1]);g.stroke()}
+  // route: the last few stations the run went through, newest leg draws itself, older legs fade
+  const seq=[];for(const e of run.ev){if(c<e.t||e.st==='kinetic'||e.st==='you')continue;if(!seq.length||seq[seq.length-1].st!==e.st)seq.push({st:e.st,t:e.t})}
+  for(let i=Math.max(1,seq.length-5);i<seq.length;i++){const A=pos[seq[i-1].st],B=pos[seq[i].st],age=c-seq[i].t;const al=age<9000?1:Math.max(0,1-(age-9000)/5000);if(al<=0)continue;
+    const f=qp(A,B,-Math.hypot(B[0]-A[0],B[1]-A[1])*.22);g.strokeStyle=`rgba(255,214,170,${.38*al})`;g.lineWidth=1.2;g.setLineDash([2,4]);curve(g,f,0,Math.min(1,age/650));g.stroke();g.setLineDash([])}
+  // impulses: out when a call starts, back when it ends
+  for(const e of run.ev){const B=pos[e.st];const dx=B[0]-cx,dy=B[1]-cy,L=Math.hypot(dx,dy);
+    const A=[cx+dx/L*(coreR+6),cy+dy/L*(coreR+6)],B2=[B[0]-dx/L*22,B[1]-dy/L*22];const bend=e.par>1?(e.pi-(e.par-1)/2)*26:L*.06;
+    const rgb=AGX[STN[e.st].h];const uo=(c-e.t)/TRAVEL;if(uo>=0&&uo<=1&&!e.msg)impulse(g,qp(A,B2,bend),ease(uo),e.st==='you'?AGX.accent:rgb);
+    if(e.msg){const ui=(c-e.t)/TRAVEL;if(ui>=0&&ui<=1)impulse(g,qp(B2,A,-bend),ease(ui),AGX.you)}
+    const ub=(c-e.t-e.dur)/TRAVEL;if(e.dur&&ub>=0&&ub<=1)impulse(g,qp(B2,A,-bend),ease(ub),e.err?AGX.bad:rgb)}
+  // kinetic (model) station also gets its own impulses
+  // emanation when the answer is ready (wide ring) or a red ring on a stop
+  const fin=run.ev[run.ev.length-1];const pe=(c-fin.t)/1900;
+  if(pe>=0&&pe<=1){const rr=coreR+(R*1.12-coreR)*(1-Math.pow(1-pe,3));g.strokeStyle=`rgba(${fin.err?AGX.bad:AGX.accent},${(1-pe)*.6})`;g.lineWidth=2+7*(1-pe);g.beginPath();g.arc(cx,cy,rr,0,6.284);g.stroke()}
+  // stations
+  for(const st of RING){const s=S_[st],[x,y]=pos[st];const fl=Math.max(0,1-(c-s.lastEnd)/500);
+    drawStation(g,x,y,st,{now,r:R<150?15:22,act:s.act>0,uses:s.uses,err:s.err,par:s.act,elapsed:s.el,flash:s.act?0:fl,count:used.has(st)?String(s.uses):'',dim:!used.has(st)})}
+  // core
+  const pct=tokAt(run,c)/run.cfg.cap;
+  drawCore(g,cx,cy,coreR,now,{running:!done&&c>0,pct,title:run.a.code,big:coreR>46?16:coreR>38?14:11,top:Math.round(pct*100)+'% tokens',topCol:pct>=.9?'rgba(255,140,140,.95)':pct>=.7?'rgba(255,205,120,.9)':null,sub:'run #'+run.num});
+}
+
+/* ---- fleet map: every agent, the stations they share ---- */
+let fleetRot=0;
+function drawFleet(cv,now){
+  const g=cv.getContext('2d'),W=cv._w,H=cv._h;g.setTransform(DPR,0,0,DPR,0,0);
+  const cx=W/2,cy=H/2+4,rx=Math.max(160,W/2-88),ry=Math.max(120,H/2-58),nLive=Object.keys(LIVE).length;
+  stageBg(g,W,H,cv,now,nLive?1:.45,cx,cy);
+  const pos={};FLEET_RING.forEach((st,i)=>{const a=-Math.PI/2+i/FLEET_RING.length*6.283;pos[st]=[cx+Math.cos(a)*rx,cy+Math.sin(a)*ry]});
+  const arx=rx*.5,ary=ry*.56;
+  AGENTS.forEach((a,i)=>{const an=-Math.PI/2+(i+.5)/AGENTS.length*6.283+fleetRot;pos[a.id]=[cx+Math.cos(an)*arx,cy+Math.sin(an)*ary]});
+  cv._pos=pos;const coreR=34;
+  // faint spokes core to stations
+  for(const st of FLEET_RING){const [x,y]=pos[st];g.strokeStyle=`rgba(${AGX[STN[st].h]},.06)`;g.lineWidth=1;g.beginPath();g.moveTo(cx,cy);g.lineTo(x,y);g.stroke()}
+  // core to agents
+  for(const a of AGENTS){const [x,y]=pos[a.id];g.strokeStyle=`rgba(171,140,255,${LIVE[a.id]?.32:a.status==='paused'?.06:.14})`;g.lineWidth=LIVE[a.id]?1.5:1;g.beginPath();g.moveTo(cx,cy);g.lineTo(x,y);g.stroke();
+    if(LIVE[a.id]&&!RMOTION){const u=((now/1600)+a.id.length*.13)%1;impulse(g,qp([cx,cy],[x,y],0),u,AGX.agent)}}
+  // live runs
+  const act={};
+  for(const id in LIVE){const run=LIVE[id],A=pos[id];if(!A)continue;const c=run.clock;
+    for(const e of run.ev){if(e.st==='kinetic')continue;const B=pos[e.st];if(!B)continue;const rgb=e.err?AGX.bad:AGX[STN[e.st].h];
+      const bend=(e.par>1?(e.pi-(e.par-1)/2)*30:0)+Math.hypot(B[0]-A[0],B[1]-A[1])*.12;const f=qp(A,B,bend);
+      const on=c>=e.t&&c<e.t+Math.max(e.dur,TRAVEL);if(on){g.strokeStyle=`rgba(${rgb},.3)`;g.lineWidth=1.2;curve(g,f,0,1);g.stroke();act[e.st]=(act[e.st]||0)+1}
+      const uo=(c-e.t)/TRAVEL;if(uo>=0&&uo<=1)impulse(g,e.msg?qp(B,A,-bend):f,ease(uo),e.msg?AGX.you:rgb);
+      const ub=(c-e.t-e.dur)/TRAVEL;if(e.dur&&ub>=0&&ub<=1)impulse(g,qp(B,A,-bend),ease(ub),rgb)}}
+  // approval and change-request impulses
+  const flashes={};
+  for(const f of FX){if(now<f.t0)continue;const A=pos[f.a],B=pos[f.b];if(!A||!B)continue;const u=Math.min(1,(now-f.t0)/f.dur);
+    const q=qp(A,B,Math.hypot(B[0]-A[0],B[1]-A[1])*.18);g.strokeStyle=`rgba(${f.rgb},${.35*(1-u*.5)})`;g.lineWidth=1.4;curve(g,q,0,u);g.stroke();impulse(g,q,ease(u),f.rgb);if(u>.8)flashes[f.b]=Math.max(flashes[f.b]||0,(u-.8)*5)}
+  for(const st of FLEET_RING){const [x,y]=pos[st];drawStation(g,x,y,st,{now,r:20,act:act[st]>0,par:act[st],uses:1,flash:flashes[st]||0})}
+  drawCore(g,cx,cy,coreR,now,{running:nLive>0,title:'KINETIC',big:12,top:nLive?nLive+' running':'idle',sub:AGENTS.length+' agents'});
+  // agents
+  for(const a of AGENTS){const [x,y]=pos[a.id];drawAgentNode(g,x,y,a,now,S.ag.hoverId===a.id,flashes[a.id]||0)}
+}
+function drawAgentNode(g,x,y,a,now,hover,flash){
+  const run=LIVE[a.id],paused=a.status==='paused',r=hover?17:15,rgb=paused?[140,146,170]:AGX.agent;
+  if(run){const k=run.ev.find(e=>e.st==='kinetic'&&run.clock>=e.t&&run.clock<e.t+e.dur);halo(g,x,y,r*3.4,rgb,(k?.5:.32)+.15*Math.sin(now/300))}
+  if(flash)halo(g,x,y,r*3,AGX.governance,.5*flash);
+  if(hover)halo(g,x,y,r*2.4,rgb,.25);
+  const f=g.createRadialGradient(x-r*.35,y-r*.4,0,x,y,r);f.addColorStop(0,paused?'#9a9db0':'#e6dcff');f.addColorStop(.45,`rgba(${rgb},${paused?.55:.95})`);f.addColorStop(1,paused?'#2a2c3a':'#2b1d58');
+  g.globalAlpha=paused?.6:1;g.fillStyle=f;g.beginPath();g.arc(x,y,r,0,6.284);g.fill();g.globalAlpha=1;
+  if(run){g.save();g.setLineDash([3,4]);g.lineDashOffset=RMOTION?0:-now/40;g.strokeStyle='rgba(171,140,255,.8)';g.lineWidth=1.2;g.beginPath();g.arc(x,y,r+5,0,6.284);g.stroke();g.restore();
+    const p=Math.min(1,tokAt(run,run.clock)/run.cfg.cap);g.strokeStyle=p>=.9?`rgb(${AGX.bad})`:p>=.7?`rgb(${AGX.governance})`:`rgb(${AGX.accent})`;g.lineWidth=2;g.lineCap='round';g.beginPath();g.arc(x,y,r+9,-Math.PI/2,-Math.PI/2+p*6.283);g.stroke();g.lineCap='butt'}
+  const pend=pendingFor(a.id),last=a.runs[0];
+  if(pend){const bx=x+r*.85,by=y-r*.85;g.fillStyle='rgb(227,166,64)';g.beginPath();g.arc(bx,by,8,0,6.284);g.fill();g.fillStyle='#14100a';g.font='700 9px "JetBrains Mono",monospace';g.textAlign='center';g.fillText(pend,bx,by+3)}
+  if(!run&&last&&(last.kind==='budget'||last.kind==='failed')){const bx=x-r*.85,by=y-r*.85;g.fillStyle='rgb(236,90,90)';g.beginPath();g.arc(bx,by,5,0,6.284);g.fill()}
+  g.textAlign='center';g.font=`600 ${hover?12:11.5}px Inter,sans-serif`;g.fillStyle=paused?'rgba(196,199,215,.6)':'#fff';g.fillText(a.name,x,y+r+16);
+  let sub;if(run){const e=[...run.ev].reverse().find(e=>run.clock>=e.t);sub=e?(e.st==='kinetic'?'thinking':STN[e.st].l.toLowerCase()):'starting'}else sub=paused?'paused':last&&last.kind==='budget'?'stopped at budget':/^(On|When)/.test(a.next)?'on event':'next · '+a.next.replace(/, \d{1,2}:\d\d [AP]M$/,'').replace(/^(\w{3}), /,'$1 ');
+  g.font='10px "JetBrains Mono",monospace';g.fillStyle=run?'rgba(200,185,255,.95)':'rgba(141,148,173,.9)';g.fillText(sub,x,y+r+29);
+}
+
+/* ---- loop ---- */
+let agPrev=performance.now(),fleetNext=performance.now()+6000,agFeedKey='';
+function fleetTick(now){
+  if(now<fleetNext)return;fleetNext=now+8000+Math.random()*7000;
+  if(Object.keys(LIVE).length>=2)return;
+  const cand=AGENTS.filter(a=>a.status==='active'&&!LIVE[a.id]);if(!cand.length)return;
+  startLive(cand[Math.floor(Math.random()*cand.length)]);
+}
+function agLoop(now){
+  const dt=Math.min(64,now-agPrev);agPrev=now;
+  for(const id in LIVE){const r=LIVE[id];r.clock+=dt;if(r.clock>=r.total)finishRun(r)}
+  if(PLAY&&!PLAY.live&&PLAY.playing){PLAY.clock+=dt*PLAY.speed;if(PLAY.clock>=PLAY.total){PLAY.clock=PLAY.total;PLAY.playing=false;agPlayUI()}}
+  FX=FX.filter(f=>now<f.t0+f.dur+400);
+  fleetTick(now);
+  if(S.page==='agents'){
+    const f=el('agfleet');if(f&&fitCanvas(f)){if(!S.ag.hoverId&&!RMOTION)fleetRot+=dt*6.283/420000;drawFleet(f,now)}
+    const m=el('agmap');if(m&&PLAY&&fitCanvas(m))drawAgentMap(m,PLAY,now);
+    agDomTick();
+  }
+  requestAnimationFrame(agLoop);
+}
+
+/* ---- live DOM (feed, now line, scrubber) without re-rendering the page ---- */
+function feedRows(run){
+  const c=run.clock,rows=[];
+  for(const e of run.ev){if(c<e.t)continue;const state=e.err&&c>=e.t+e.dur?'err':(e.dur&&c<e.t+e.dur?'run':'done');
+    const p=rows[rows.length-1];
+    if(p&&state==='done'&&p.state==='done'&&p.e.st===e.st&&!e.msg&&!e.ans&&!p.e.msg&&!p.e.ans&&!e.ask&&!p.e.ask){p.n++;p.dur+=e.dur;continue}
+    rows.push({e,state,n:0,dur:e.dur})}
+  const running=rows.filter(r=>r.state==='run'),rest=rows.filter(r=>r.state!=='run').reverse();
+  return running.concat(rest).slice(0,16);
+}
+function rowHTML(r,run){
+  const e=r.e,c=run.clock,st=STN[e.st];const col=`rgb(${e.st==='you'?AGX.you:AGX[st.h]})`;
+  const g=r.state==='run'?`<span style="color:${col}">●</span>`:r.state==='err'?'✕':e.ans?'<span style="color:var(--cb-accent)">◆</span>':'·';
+  const tm=r.state==='run'?fmtMs(c-e.t):e.ans?fmtMs(e.t):e.msg||e.stop?'-':fmtMs(r.dur);
+  return `<div class="ag-row ${r.state}${e.ans?' ans':''}"><span class="g">${g}</span><span class="st" style="${r.state==='run'?'color:'+col:''}">${st.l}</span><span class="lb" title="${esc(e.l)}">${esc(e.l)}</span><span class="tm">${r.n?`<span class="more">+${r.n}</span> `:''}${tm}</span></div>`;
+}
+function nowHTML(run){
+  const c=run.clock,a=run.ev.filter(e=>e.dur&&c>=e.t&&c<e.t+e.dur),pct=Math.round(tokAt(run,c)/run.cfg.cap*100);
+  if(runDone(run)){const tk=fmtK(tokAt(run,run.total));
+    if(run.kind==='budget')return `<span style="color:#ff9a9a">Stopped · token budget reached</span><small>${fmtMs(run.end)} · ${tk} of ${run.cfg.cap}K cap · resumable from checkpoint</small>`;
+    if(run.kind==='failed')return `<span style="color:#ff9a9a">Finished with a data gap</span><small>${fmtMs(run.end)} · ${tk} tokens · partial context delivered</small>`;
+    return `<span style="color:#ffd0ad">Finished · delivered</span><small>${fmtMs(run.end)} · ${tk} tokens · ${pct}% of the ${run.cfg.cap}K cap</small>`}
+  if(!a.length){const last=[...run.ev].reverse().find(e=>c>=e.t);return last?`${STN[last.st].l}: ${esc(last.l)}<small>tokens ${pct}%</small>`:'Starting<small>tokens 0%</small>'}
+  return `${STN[a[0].st].l}: ${esc(a[0].l)}${a.length>1?` <span style="color:#8d94ad">and ${a.length-1} more</span>`:''}<small>tokens ${pct}% of ${run.cfg.cap}K</small>`;
+}
+function agDomTick(){
+  const fs=el('agfleetsum');if(fs){const t=fleetSummary();if(fs.textContent!==t)fs.textContent=t}
+  if(!PLAY||!el('agfeed'))return;
+  const r=PLAY,c=r.clock;
+  const key=r.num+'|'+Math.floor(c/100)+'|'+r.live;
+  if(key===agFeedKey)return;agFeedKey=key;
+  const rows=feedRows(r);
+  el('agfeed').innerHTML=`<div class="ag-feedh"><span>Run feed</span><span>${r.ev.filter(e=>c>=e.t).length} of ${r.ev.length} steps</span></div>`+(rows.length?rows.map(x=>rowHTML(x,r)).join(''):'<div class="ag-empty">Waiting for the first call</div>');
+  const nw=el('agnow');if(nw)nw.innerHTML=nowHTML(r);
+  const pr=el('agprog');if(pr)pr.style.width=(Math.min(1,c/r.end)*100).toFixed(2)+'%';
+  const tm=el('agtime');if(tm)tm.textContent=fmtMs(Math.min(c,r.end));
+  const rs=el('agresult');if(rs){const d=runDone(r)?'1':'0';if(rs.dataset.d!==d+r.num){rs.dataset.d=d+r.num;rs.innerHTML=resultHTML(r)}}
+  const tg=el('agtag');if(tg){const t=tagHTML();if(tg.dataset.k!==t){tg.dataset.k=t;tg.innerHTML=t}}
+}
+function agPlayUI(){const p=el('agplaybar');if(p)p.innerHTML=playBarHTML()}
+function fleetSummary(){const n=Object.keys(LIVE).length,p=APPROVALS.filter(x=>!x.decided).length;return `${AGENTS.length} agents · ${n} running · ${p} approval${p===1?'':'s'} waiting`}
+
+/* ---- views ---- */
+function legendHTML(){return `<div class="ag-legend">${[['Data','grounding'],['Governance','governance'],['Reasoning','agent'],['Outputs','exec'],['You','you']].map(([l,h])=>`<span><i style="color:rgb(${AGX[h]});background:rgb(${AGX[h]})"></i>${l}</span>`).join('')}</div>`}
+function heroHTML(){
+  if(!S.ag.hero)return `<button class="ag-herocollapsed" data-ag="hero">${ic('network')}Show the fleet map<span>${esc(fleetSummary())}</span></button>`;
+  return `<div class="ag-stage ag-hero"><canvas id="agfleet" role="img" aria-label="Live map of all agents and the data they use"></canvas>
+    <div class="ag-ov tl"><p class="ag-ovt">Fleet · live</p><p class="ag-ovs" id="agfleetsum">${esc(fleetSummary())}</p></div>
+    <button class="ag-ov tr k-btn k-btn--quiet ag-hide" data-ag="hero">${ic('minimize-2')}Hide map</button>
+    <div class="ag-ov bl">${legendHTML()}</div><div class="ag-ov br ag-hint">Click an agent to open its map</div>
+    <div id="agtip" class="ag-tip" hidden></div></div>`;
+}
+function stripHTML(a){return `<span class="ag-strip" aria-label="Last runs">${a.runs.slice(0,8).reverse().map(r=>`<i class="${r.kind}" title="Run #${r.num} · ${KIND[r.kind][1]} · ${esc(r.when)}"></i>`).join('')}</span>`}
+function agentsHTML(){return S.ag.view==='detail'&&agById(S.ag.id)?agDetailHTML():agListHTML()}
+function agListHTML(){
+  const pend=APPROVALS.filter(x=>!x.decided).length,t=S.ag.tab;
+  const body=t==='Approvals'?apHTML():t==='Activity'?actHTML():myAgentsHTML();
+  return headHTML('Agents')+`<div class="k-scroll"><div class="k-wrap ag-wrap">
+  <div class="k-pagehead"><div style="display:flex;align-items:center;gap:.5rem">${ic('bot')}<h1 class="k-h1">Agents</h1><span class="k-count">${AGENTS.length}</span></div>
+    <div class="ml">${t==='My agents'?`<div class="k-seg"><button class="${S.ag.layout==='cards'?'on':''}" data-ag="layout" data-arg="cards">${ic('layout-grid')}Cards</button><button class="${S.ag.layout==='table'?'on':''}" data-ag="layout" data-arg="table">${ic('list')}Table</button></div>`:''}
+    <button class="k-btn k-btn--primary" data-act="New agents are created in chat. Ask Ana in Agentic mode, for example: every Monday, rank denial movers by payer">${ic('plus')}New agent</button></div></div>
+  <div class="k-tabs">${[['My agents',AGENTS.length],['Approvals',pend],['Activity',null]].map(([n,c])=>`<button class="k-tab${t===n?' on':''}" data-ag="tab" data-arg="${n}">${n}${c!=null?`<span class="k-count">${c}</span>`:''}</button>`).join('')}</div>
+  ${heroHTML()}${body}</div></div>`;
+}
+function myAgentsHTML(){
+  const q=S.ag.q.trim().toLowerCase();
+  const list=AGENTS.filter(a=>{const [k]=agStatus(a);if(q&&!(a.name+' '+a.instr).toLowerCase().includes(q))return false;
+    return S.ag.chip==='All'||(S.ag.chip==='Running'&&k==='run')||(S.ag.chip==='Needs attention'&&(k==='warn'||k==='bad'))||(S.ag.chip==='Paused'&&k==='paused')});
+  const tb=`<div class="ag-toolbar"><label class="k-search" style="flex:1 1 16rem;max-width:22rem">${ic('search')}<input id="agq" placeholder="Search agents" aria-label="Search agents" value="${esc(S.ag.q)}"></label>
+    <div class="k-chips">${['All','Running','Needs attention','Paused'].map(c=>`<button class="k-chip${S.ag.chip===c?' on':''}" data-ag="chip" data-arg="${c}">${c}</button>`).join('')}</div></div>`;
+  if(!list.length)return tb+`<div class="k-empty"><p class="k-empty__title">No agents match.</p><p>Clear the search or pick another filter.</p></div>`;
+  if(S.ag.layout==='table')return tb+`<div class="ag-tablewrap"><table class="ag-table"><thead><tr><th>Agent</th><th>Status</th><th>Schedule</th><th>Next run</th><th>Last runs</th><th>Delivery</th><th></th></tr></thead><tbody>${list.map(a=>{const [k,l]=agStatus(a);
+    return `<tr data-ag="open" data-arg="${a.id}"><td><div class="nm">${esc(a.name)}</div><div class="sub">${esc(a.instr)}</div></td><td><span class="ag-pill ${k}">${l}</span></td><td>${esc(schedText(a))}</td><td>${esc(nextText(a).replace(/^Next run /,''))}</td><td>${stripHTML(a)}</td><td>${delivText(a)}</td>
+    <td class="acts"><button class="k-iconbtn" title="${a.status==='paused'?'Resume':'Pause'}" data-ag="pause" data-arg="${a.id}">${ic(a.status==='paused'?'play':'pause')}</button><button class="k-iconbtn" title="Edit" data-ag="edit" data-arg="${a.id}">${ic('pencil')}</button><button class="k-iconbtn" title="Activity" data-ag="activity" data-arg="${a.id}">${ic('activity')}</button><button class="k-iconbtn" title="Open map" data-ag="open" data-arg="${a.id}">${ic('map')}</button></td></tr>`}).join('')}</tbody></table></div>`;
+  return tb+`<div class="ag-cards">${list.map(cardHTML).join('')}</div>`;
+}
+function cardHTML(a){
+  const [k,l]=agStatus(a),live=LIVE[a.id],last=a.runs[0];
+  const acts=S.ag.del===a.id?`<span class="ag-confirm">Delete this agent and its schedule?</span><span class="sp"></span><button class="ag-lnk" data-ag="delno">Cancel</button><button class="ag-lnk danger box" data-ag="delyes" data-arg="${a.id}">Delete</button>`
+    :`<button class="ag-lnk danger" data-ag="del" data-arg="${a.id}">Delete</button><button class="ag-lnk" data-ag="pause" data-arg="${a.id}">${a.status==='paused'?'Resume':'Pause'}</button><span class="sp"></span>
+      <button class="ag-lnk box" data-ag="edit" data-arg="${a.id}">${ic('pencil')}Edit</button><button class="ag-lnk" data-ag="activity" data-arg="${a.id}">Activity</button>${a.from?`<button class="ag-lnk" data-act="Opens the source conversation: ${a.from}">${ic('external-link')}</button>`:''}`;
+  return `<article class="agc${live?' live':''}" data-ag="open" data-arg="${a.id}" tabindex="0" aria-label="Open ${esc(a.name)}">
+    <div class="agc-top"><span class="agc-ic">${ic('bot')}</span><div class="agc-tt"><h3>${esc(a.name)}</h3><div class="agc-meta"><span class="k">Agent</span> · ${esc(schedText(a))}</div></div><span class="ag-pill ${k}">${l}</span></div>
+    ${a.from?`<div class="agc-meta" style="margin-top:-.25rem">Created from an answer in ${esc(a.from)}</div>`:''}
+    <p class="agc-instr">${esc(a.instr)}</p>
+    <div class="agc-runs">${stripHTML(a)}<span>${live?'Running now · '+esc(nowLabel(live)):last?`Run #${last.num} · ${KIND[last.kind][1]} · ${esc(last.when)}`:'Not yet run'}</span></div>
+    <div class="agc-foot"><span><b>${esc(nextText(a))}</b></span><span>${delivText(a)}</span></div>
+    <div class="agc-acts">${acts}</div></article>`;
+}
+function nowLabel(r){const e=[...r.ev].reverse().find(e=>r.clock>=e.t);return e?STN[e.st].l:'starting'}
+
+function agDetailHTML(){
+  const a=agById(S.ag.id),[k,l]=agStatus(a),t=S.ag.dtab;
+  const crumb=`<a data-ag="back">Agents</a></li><li>/</li><li class="cur">${esc(a.name)}`;
+  const body=t==='Runs'?runsHTML(a):t==='Settings'?settingsHTML(a):liveHTML(a);
+  return headHTML(crumb)+`<div class="k-scroll"><div class="k-wrap ag-wrap ag-wrap--wide">
+  <div class="agd-head"><span class="agd-ic">${ic('bot')}</span><div class="agd-tt"><h1>${esc(a.name)}</h1>
+    <div class="agd-meta"><span class="ag-pill ${k}">${l}</span><span>${ic('calendar')}${esc(schedText(a))}</span><span>${ic('clock')}${esc(nextText(a))}</span><span>${ic('mail')}${delivText(a)}</span>${a.from?`<button class="ag-lnk" style="height:22px" data-act="Opens the source conversation: ${a.from}">${ic('external-link')}${esc(a.from)}</button>`:''}</div></div>
+    <div class="agd-acts"><button class="k-btn" data-ag="pause" data-arg="${a.id}">${ic(a.status==='paused'?'play':'pause')}${a.status==='paused'?'Resume':'Pause'}</button>
+    <button class="k-btn k-btn--primary" data-ag="runnow" data-arg="${a.id}"${LIVE[a.id]?' disabled':''}>${ic('play')}${LIVE[a.id]?'Running':'Run now'}</button></div></div>
+  <div class="k-tabs">${[['Live','Live map',null],['Runs','Runs',a.runs.length],['Settings','Settings',null]].map(([id,n,c])=>`<button class="k-tab${t===id?' on':''}" data-ag="dtab" data-arg="${id}">${n}${c!=null?`<span class="k-count">${c}</span>`:''}</button>`).join('')}</div>
+  ${body}</div></div>`;
+}
+function tagHTML(){if(!PLAY)return '';return PLAY.live?`<b>Live</b><span>run #${PLAY.num}${PLAY.test?' · test with unsaved settings':''}</span>`:`<b>Replay</b><span>run #${PLAY.num} · ${KIND[PLAY.kind][1].toLowerCase()}</span>`}
+function liveHTML(a){
+  if(!PLAY||PLAY.a!==a)bindPlay();
+  if(!PLAY)return `<div class="k-empty"><p class="k-empty__title">No runs yet.</p><p>Run now to watch this agent work.</p></div>`;
+  return `<div class="agd-grid">
+    <div class="ag-stage ag-stage--detail"><canvas id="agmap" role="img" aria-label="Map of what ${esc(a.name)} is doing"></canvas>
+      <div class="ag-stagetag" id="agtag"></div><div class="ag-ov bl">${legendHTML()}</div>
+      <div class="ag-ov br ag-hint">Spokes thicken with use · ring = token budget</div></div>
+    <aside class="agd-side">
+      <div class="ag-panel"><div class="ag-now" id="agnow"></div>
+        <div class="ag-play"><div class="ag-playrow" id="agplaybar">${playBarHTML()}</div>
+        <div class="ag-scrub${PLAY.live?' live':''}" data-agseek="1" role="slider" aria-label="Run position"><div class="ag-scrubfill" id="agprog"></div></div>
+        <div class="ag-scrubt"><span id="agtime">0 ms</span><span>${fmtMs(PLAY.end)}</span></div></div></div>
+      <div class="ag-panel ag-feed" id="agfeed"></div>
+      <div class="ag-panel" id="agresult"></div>
+    </aside></div>`;
+}
+function playBarHTML(){
+  const r=PLAY;if(!r)return '';
+  if(r.live)return `<span class="ag-livepill"><i></i>Live</span><span class="ag-pbinfo">Run #${r.num} · started by ${esc(r.ev[0].l.split(' · ')[0].toLowerCase())}</span>`;
+  return `<button class="k-iconbtn" data-ag="play" title="${r.playing?'Pause':'Play'}">${ic(r.playing?'pause':'play')}</button><button class="k-iconbtn" data-ag="replay" title="Replay from the start">${ic('rotate-ccw')}</button>
+    <div class="ag-speed">${[1,2,4].map(s=>`<button class="${r.speed===s?'on':''}" data-ag="speed" data-arg="${s}">${s}×</button>`).join('')}</div>
+    <span class="ag-pbinfo">Replay · run #${r.num}</span>`;
+}
+function resultHTML(r){
+  if(!runDone(r))return `<div class="ag-result"><h4>${ic('clock')}Result</h4><p style="margin:0;font-size:12.5px;color:#8d94ad">Findings appear here when the run finishes.</p></div>`;
+  const a=r.a,p=a.plan,k=r.kind,outs=[];
+  for(const e of r.ev){if(e.st==='library')outs.push(`<button class="ag-out" data-act="Opens ${esc(e.l.replace('Report · ',''))} in the Analytical library">${ic('file-text')}Report</button>`);
+    if(e.st==='superset')outs.push(`<button class="ag-out" data-act="Opens the Superset dashboard: ${esc(e.l.replace('Dashboard · ',''))}">${ic('layout-dashboard')}Dashboard</button>`);
+    if(e.st==='approvals'){const ap=APPROVALS.find(x=>x.what===e.l&&x.from===a.id);outs.push(`<button class="ag-out gov" data-ag="gotoap" data-arg="${ap?ap.id:''}">${ic('circle-check')}Approval${ap&&ap.decided?' · '+ap.decided:' · waiting'}</button>`)}}
+  if(k==='budget')return `<div class="ag-result"><h4 class="bad">${ic('circle-alert')}Stopped at the token budget</h4>
+    <p class="ag-notice">Hit the ${r.cfg.cap}K per-run cap while composing findings. Nothing was delivered. The run keeps its checkpoint.</p>
+    <div class="outs"><button class="ag-out" data-ag="retry" data-arg="${a.id}">${ic('rotate-ccw')}Retry from checkpoint</button><button class="ag-out" data-ag="dtab" data-arg="Settings">${ic('settings')}Raise the cap</button></div></div>`;
+  const find=k==='failed'?p.find.slice(0,2):p.find;
+  return `<div class="ag-result"><h4 class="${k==='failed'?'warn':''}">${ic(k==='failed'?'circle-alert':'circle-check')}${k==='failed'?'Partial result':'What it found'}</h4>
+    ${k==='failed'?`<p class="ag-notice">Not accessible: ${esc(p.gap)}. Findings below are partial context.</p>`:''}
+    <ul>${find.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>${outs.length?`<div class="outs">${outs.join('')}</div>`:''}</div>`;
+}
+function runsHTML(a){
+  if(!a.runs.length)return `<div class="k-empty"><p class="k-empty__title">No runs yet.</p></div>`;
+  return `<div class="ag-tablewrap"><table class="ag-table"><thead><tr><th>Run</th><th>Status</th><th>Trigger</th><th>Run time</th><th>Tokens</th><th>Headline</th><th>When</th><th></th></tr></thead><tbody>
+  ${a.runs.map(h=>{hstat(a,h);const [k,l]=KIND[h.kind];const hl=headline(a,h);
+   return `<tr data-ag="replayrun" data-arg="${h.num}"><td class="mono">#${h.num}</td><td><span class="ag-pill ${k}">${l}</span></td><td>${esc(a.plan.trig.split(' · ')[0])}</td><td class="mono">${fmtMs(h.secs*1000)}</td><td class="mono">${fmtK(h.tok)} / ${a.cap}K</td><td><div class="sub">${esc(hl)}</div></td><td>${esc(h.when)}</td><td class="acts"><button class="ag-lnk box" data-ag="replayrun" data-arg="${h.num}">${ic('play')}Replay on map</button></td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+function settingsHTML(a){
+  if(!S.ag.draft||S.ag.draft.id!==a.id)S.ag.draft=cfgOf(a);
+  const d=S.ag.draft,sw=(on,act,arg,lab)=>`<button class="swt${on?' on':''}" role="switch" aria-checked="${!!on}" aria-label="${lab}" data-ag="${act}" data-arg="${arg||''}"><i></i></button>`;
+  const left=ARCH.filter(n=>!d.skills.includes(n));
+  const sel=(path,opts,val,lab)=>`<select class="ae-sel" data-agf="${path}" aria-label="${lab}">${opts.map(([v,t])=>`<option value="${esc(String(v))}"${String(v)===String(val)?' selected':''}>${esc(t)}</option>`).join('')}</select>`;
+  const trig=d.triggers.map((t,i)=>t.type==='schedule'
+    ?`<div class="ae-trig">${ic('calendar')}<b>Schedule</b>${sel(`triggers.${i}.freq`,Object.entries(FREQ),t.freq,'Frequency')}<span>at</span>${sel(`triggers.${i}.time`,TIMES.map(x=>[x,x]),t.time,'Time')}<span style="color:var(--k-muted);font-size:12px">America/Los_Angeles</span><button class="k-iconbtn x" title="Remove" data-ag="trigdel" data-arg="${i}">${ic('x')}</button></div>`
+    :`<div class="ae-trig">${ic('zap')}<b>Event</b>${sel(`triggers.${i}.event`,Object.entries(AEVENTS),t.event,'Event')}${t.event==='threshold'?`${sel(`triggers.${i}.metric`,TMETRICS.map(x=>[x,x]),t.metric,'Metric')}${sel(`triggers.${i}.op`,[['above','above'],['below','below']],t.op,'Direction')}<input class="ae-in" data-agf="triggers.${i}.value" value="${esc(t.value||'')}" aria-label="Threshold">`:''}<button class="k-iconbtn x" title="Remove" data-ag="trigdel" data-arg="${i}">${ic('x')}</button></div>`).join('');
+  return `<div class="ae">
+  <section class="aesec"><h3>Name</h3><p>Shown on the map, in Activity and in every delivery</p><input class="ae-in" data-agf="name" value="${esc(d.name)}" aria-label="Agent name"></section>
+  <section class="aesec"><h3>Instructions <span class="req">*</span></h3><p>What this agent should do, in plain words</p><textarea class="ae-ta" data-agf="instr" aria-label="Instructions">${esc(d.instr)}</textarea></section>
+  <section class="aesec"><h3>Skills</h3><p>Analysis archetypes this agent uses for its tasks</p>
+    ${d.skills.length?`<div class="ae-chips">${d.skills.map((n,i)=>`<span class="ae-chip">${ic('zap')}${esc(n)}<button data-ag="skilldel" data-arg="${i}" aria-label="Remove ${esc(n)}">${ic('x')}</button></span>`).join('')}</div>`:''}
+    <span class="ae-menuwrap"><button class="ae-add" data-ag="menu" data-arg="skill"${left.length?'':' disabled'}>${ic('plus')}Add skill</button>${S.ag.menu==='skill'?`<div class="ae-menu" role="menu">${left.map(n=>`<button data-ag="skilladd" data-arg="${esc(n)}">${ic('zap')}${esc(n)}</button>`).join('')}</div>`:''}</span></section>
+  <section class="aesec"><h3>Triggers <span class="req">*</span></h3><p>When this agent runs</p>${trig}
+    <div class="ae-addrow"><button class="ae-add" data-ag="trigadd" data-arg="schedule">${ic('plus')}Add schedule</button><button class="ae-add" data-ag="trigadd" data-arg="event">${ic('plus')}Add event</button></div>
+    <p class="ae-note">Each run uses tokens from your monthly budget</p></section>
+  <section class="aesec"><h3>Capabilities</h3><p>What this agent can do with what it finds. Changes show on the map from the next run.</p>
+    ${ATOOLS.map(([k,l,dsc,lock])=>`<div class="ae-tool"><div><b>${l}</b><p>${dsc}</p></div>${lock?'<span class="fixed">Always on</span>':sw(d.tools[k],'tool',k,l)}</div>`).join('')}
+    <div class="ae-tool"><div><b>Web search</b><p>Not available. Kinetic answers only from governed data.</p></div><span class="fixed">Off</span></div>
+    <div class="ae-tool"><div><b>Require approval before actions</b><p>Dashboards, recommendations and proposals wait for a person to approve them.</p></div>${sw(d.approval,'approval','','Require approval')}</div></section>
+  <section class="aesec"><h3>Delivery</h3><p>Where results go after each run</p><div class="ae-deliv">
+    <span class="ae-dchip on lock">${ic('check')}In Kinetic, always on</span>
+    <button class="ae-dchip${d.email?' on':''}" data-ag="deliv" data-arg="email">${d.email?ic('check'):ic('mail')}Email to me</button>
+    <button class="ae-dchip${d.slack?' on':''}" data-ag="deliv" data-arg="slack">${d.slack?ic('check'):ic('hash')}Slack · #rev-cycle-ops</button></div></section>
+  <section class="aesec"><h3>Guardrails and memory</h3><p>Limits that keep runs predictable</p>
+    <div class="ae-tool"><div><b>Token cap per run</b><p>Runs stop at the cap and keep a checkpoint you can resume from. Shown as the ring around the agent on the map.</p></div>${sel('cap',CAPS.map(c=>[c,c+'K tokens']),d.cap,'Token cap')}</div>
+    <div class="ae-tool"><div><b>Remember previous runs</b><p>Compares each run with the last one and says what changed.</p></div>${sw(d.memory,'memory','','Remember previous runs')}</div></section>
+  <section class="aesec ae-danger"><h3>Agent</h3><p>${a.status==='paused'?'Paused. No scheduled or event runs start until you resume it.':'Pausing lets a running run finish and stops new runs.'}</p>
+    <div class="row"><button class="k-btn" data-ag="pause" data-arg="${a.id}">${ic(a.status==='paused'?'play':'pause')}${a.status==='paused'?'Resume agent':'Pause agent'}</button><button class="k-btn" style="color:var(--k-bad)" data-ag="del" data-arg="${a.id}">${ic('trash-2')}Delete agent</button>
+    ${S.ag.del===a.id?`<span class="ag-confirm">Delete it and its schedule?<button class="ag-lnk" data-ag="delno">Cancel</button><button class="ag-lnk danger box" data-ag="delyes" data-arg="${a.id}">Delete</button></span>`:''}</div></section>
+  </div>
+  <div class="ae-bar"><span class="st${d.dirty?' dirty':''}" id="agdirty">${d.dirty?'Unsaved changes':'All changes saved'}</span><span class="sp"></span>
+    <button class="k-btn k-btn--quiet" data-ag="discard" id="agdiscard"${d.dirty?'':' disabled'}>Discard</button>
+    <button class="k-btn" data-ag="test" data-arg="${a.id}"${LIVE[a.id]?' disabled':''}>${ic('play')}Test agent</button>
+    <button class="k-btn k-btn--primary" data-ag="save" id="agsave"${d.dirty?'':' disabled'}>Save changes</button></div>`;
+}
+
+/* approvals */
+const SUP={'Directly supported':'ok','Calculated':'info','Assisted':'warn'};
+function apRow(x){const a=agById(x.from);return `<button class="ap-row${S.ag.apSel===x.id?' on':''}${x.decided?' dec':''}" data-ag="apsel" data-arg="${x.id}"><b>${esc(x.what)}</b>
+  <span class="m"><span>${esc(a?a.name:'Deleted agent')}</span><span class="ag-pill ${x.decided?(x.decided==='approved'?'ok':'paused'):SUP[x.support]}">${x.decided?(x.decided==='approved'?'Approved':'Rejected'):esc(x.support)}</span><span>${esc(x.age)}</span>${x.revs.length?`<span>${x.revs.length} change request${x.revs.length>1?'s':''}</span>`:''}</span></button>`}
+function apChart(x){
+  const n=x.series.length,max=Math.max(...x.series)*1.15||1,W=320,Hc=120,bw=26,gap=(W-24-n*bw)/(n-1);
+  return `<svg class="ap-chart" viewBox="0 0 ${W} ${Hc+18}" role="img" aria-label="${esc(x.label)}">
+   <line x1="12" x2="${W-12}" y1="${Hc}" y2="${Hc}" stroke="rgba(156,159,178,.35)"/>
+   ${x.series.map((v,i)=>{const h=Math.max(2,v/max*(Hc-18)),X=12+i*(bw+gap),Y=Hc-h,hi=i===n-1;
+     return `<path class="bar${hi?' hi':''}" d="M${X} ${Hc}V${Y+4}a4 4 0 0 1 4-4h${bw-8}a4 4 0 0 1 4 4V${Hc}Z"><title>Week ${39+i}: ${v}${x.unit}</title></path><text x="${X+bw/2}" y="${Hc+13}" text-anchor="middle">W${39+i}</text>${hi?`<text class="v" x="${X+bw/2}" y="${Y-5}" text-anchor="middle">${v}${x.unit}</text>`:''}`}).join('')}</svg>`;
+}
+function apDetail(x){
+  const a=agById(x.from);
+  return `<div class="ap-from"><span class="ag-pill ${SUP[x.support]}">${esc(x.support)}</span><span>From</span>${a?`<button data-ag="open" data-arg="${a.id}">${esc(a.name)}</button>`:'<span>Deleted agent</span>'}<span>· run #${x.run} · ${esc(x.age==='just now'?x.age:x.age+' ago')}</span></div>
+  <h2>${esc(x.what)}</h2>
+  <div class="ap-h">Evidence</div><p class="ap-why">${esc(x.why)}</p>
+  <div class="ap-h">${esc(x.label)}</div>${apChart(x)}
+  <div class="ap-h">Supporting figures</div><div class="ap-kv">${x.rows.map(([k,v])=>`<div><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('')}</div>
+  <div class="ap-h">What approving does</div><p class="ap-act">${esc(x.action)}</p>
+  ${x.revs.length?`<ul class="ap-revs">${x.revs.map((r,i)=>`<li>Revision ${i+1}: “${esc(r)}”, sent to the agent</li>`).join('')}</ul>`:''}
+  ${x.decided?`<div class="ap-done">${ic(x.decided==='approved'?'circle-check':'x')}<span>${x.decided==='approved'?'Approved. '+esc(a?a.name:'The agent')+' '+esc(x.done)+'.':'Rejected. Nothing was changed.'}</span><span style="flex:1"></span><button class="k-btn" data-ag="undo" data-arg="${x.id}">Undo</button></div>`
+   :`<div class="ap-decide"><label class="ap-h" for="apnote" style="display:block;margin-top:0">Request a change (optional)</label><textarea class="ae-ta" id="apnote" placeholder="For example: only accounts over $5K, and skip Facility 19">${esc(S.ag.apNote)}</textarea>
+     <div class="ap-btns"><button class="k-btn k-btn--primary" data-ag="approve" data-arg="${x.id}">${ic('check')}Approve</button><button class="k-btn" data-ag="change" data-arg="${x.id}">Send change request</button><button class="k-btn k-btn--quiet" data-ag="reject" data-arg="${x.id}">Reject</button></div></div>`}`;
+}
+function apHTML(){
+  const pend=APPROVALS.filter(x=>!x.decided),dec=APPROVALS.filter(x=>x.decided);
+  if(!APPROVALS.find(x=>x.id===S.ag.apSel))S.ag.apSel=(pend[0]||dec[0]||{}).id;
+  const sel=APPROVALS.find(x=>x.id===S.ag.apSel);
+  return `<div class="ap-grid"><div class="ap-list">${pend.length?pend.map(apRow).join(''):'<div class="k-empty"><p class="k-empty__title">Nothing waiting.</p><p>Agents send recommended actions here.</p></div>'}
+    ${dec.length?`<div class="ap-sec">Decided</div>${dec.map(apRow).join('')}`:''}</div>
+    <div class="ap-detail">${sel?apDetail(sel):'<div class="k-empty"><p>Select a recommendation.</p></div>'}</div></div>`;
+}
+
+/* activity */
+function actHTML(){
+  const all=[];AGENTS.forEach(a=>a.runs.forEach(h=>{hstat(a,h);all.push({a,h})}));all.sort((x,y)=>whenTs(y.h)-whenTs(x.h));const inMonth=h=>/Nov|Today/.test(h.when);
+  const month=AGENTS.map(a=>({a,tok:a.runs.filter(inMonth).reduce((s,h)=>s+hstat(a,h).tok,0)})).sort((x,y)=>y.tok-x.tok);
+  const used=month.reduce((s,x)=>s+x.tok,0),budget=8000,maxT=Math.max(...month.map(x=>x.tok))||1;
+  const rows=all.filter(({a,h})=>(S.ag.actAgent==='all'||a.id===S.ag.actAgent)&&(S.ag.actStatus==='All'||(S.ag.actStatus==='Completed'&&h.kind==='ok')||(S.ag.actStatus==='Needs approval'&&h.kind==='needs')||(S.ag.actStatus==='Stopped'&&(h.kind==='budget'||h.kind==='failed'))));
+  const live=Object.values(LIVE);
+  return `<div class="ac-usage"><div class="ac-card"><h3>Tokens this month</h3><div class="ac-big">${fmtK(used)}<small>of ${fmtK(budget)}</small></div><div class="ac-track"><i style="width:${Math.min(100,used/budget*100).toFixed(1)}%"></i></div><p class="ac-note">${Math.round(used/budget*100)}% used · resets Dec 1 · team budgets live in User management</p></div>
+    <div class="ac-card"><h3>By agent</h3><div class="ac-bars">${month.map(x=>`<button data-ag="actagent" data-arg="${x.a.id}">${esc(x.a.name)}</button><div class="b" style="width:${(x.tok/maxT*100).toFixed(1)}%" title="${esc(x.a.name)}: ${fmtK(x.tok)}"></div><span class="v">${fmtK(x.tok)}</span>`).join('')}</div></div></div>
+  <div class="ag-toolbar"><select class="k-select" id="agactsel" aria-label="Agent"><option value="all">All agents</option>${AGENTS.map(a=>`<option value="${a.id}"${S.ag.actAgent===a.id?' selected':''}>${esc(a.name)}</option>`).join('')}</select>
+    <div class="k-chips">${['All','Completed','Needs approval','Stopped'].map(c=>`<button class="k-chip${S.ag.actStatus===c?' on':''}" data-ag="actstatus" data-arg="${c}">${c}</button>`).join('')}</div></div>
+  <div class="ag-tablewrap"><table class="ag-table"><thead><tr><th>Run · result</th><th>Agent</th><th>Status</th><th>Run time</th><th>Tokens</th><th>When</th><th></th></tr></thead><tbody>
+  ${live.filter(r=>S.ag.actAgent==='all'||r.a.id===S.ag.actAgent).map(r=>`<tr data-ag="open" data-arg="${r.a.id}"><td><div class="nm">Run #${r.num}</div><div class="sub">In progress · ${esc(nowLabel(r))}</div></td><td>${esc(r.a.name)}</td><td><span class="ag-pill run">Running</span></td><td class="mono">-</td><td class="mono">-</td><td>Now</td><td class="acts"><button class="ag-lnk box" data-ag="open" data-arg="${r.a.id}">${ic('map')}Watch live</button></td></tr>`).join('')}
+  ${rows.map(({a,h})=>{const [k,l]=KIND[h.kind];const hl=headline(a,h);
+    return `<tr data-ag="replayof" data-arg="${a.id}:${h.num}"><td><div class="nm">Run #${h.num}</div><div class="sub">${esc(hl)}</div></td><td>${esc(a.name)}</td><td><span class="ag-pill ${k}">${l}</span></td><td class="mono">${fmtMs(h.secs*1000)}</td><td class="mono">${fmtK(h.tok)}</td><td>${esc(h.when)}</td><td class="acts"><button class="ag-lnk box" data-ag="replayof" data-arg="${a.id}:${h.num}">${ic('play')}Replay</button></td></tr>`}).join('')}
+  </tbody></table></div>`;
+}
+
+/* ---- events ---- */
+function draftSet(path,val){const d=S.ag.draft;if(!d)return;const ks=path.split('.');let o=d;for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=path==='cap'?+val:val;d.dirty=true}
+function dirtyUI(){const d=S.ag.draft;if(!d)return;const s=el('agsave'),x=el('agdiscard'),t=el('agdirty');if(s)s.disabled=!d.dirty;if(x)x.disabled=!d.dirty;if(t){t.textContent=d.dirty?'Unsaved changes':'All changes saved';t.classList.toggle('dirty',!!d.dirty)}}
+document.addEventListener('input',e=>{const t=e.target;
+  if(t.id==='agq'){S.ag.q=t.value;const p=t.selectionStart;agRender();const q=el('agq');if(q){q.focus();q.setSelectionRange(p,p)}return}
+  if(t.id==='apnote'){S.ag.apNote=t.value;return}
+  if(t.dataset&&t.dataset.agf&&t.tagName!=='SELECT'){draftSet(t.dataset.agf,t.value);dirtyUI()}});
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.id==='agactsel'){S.ag.actAgent=t.value;agRender();return}
+  if(t.tagName==='SELECT'&&t.dataset.agf){draftSet(t.dataset.agf,t.value);if(/event$/.test(t.dataset.agf)){const i=+t.dataset.agf.split('.')[1];const tr=S.ag.draft.triggers[i];if(tr.event==='threshold'&&!tr.metric)Object.assign(tr,{metric:TMETRICS[0],op:'above',value:'10%'})}agRender()}});
+document.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('agc')&&e.target===document.activeElement){e.preventDefault();openAgent(e.target.dataset.arg)}});
+document.addEventListener('mousemove',e=>{
+  const cv=e.target.id==='agfleet'?e.target:null,tip=el('agtip');
+  if(!cv){if(S.ag.hoverId){S.ag.hoverId=null;if(tip)tip.hidden=true}return}
+  const r=cv.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let best=null,bd=26;
+  for(const a of AGENTS){const p=cv._pos&&cv._pos[a.id];if(!p)continue;const d=Math.hypot(p[0]-x,p[1]-y);if(d<bd){bd=d;best=a}}
+  S.ag.hoverId=best?best.id:null;cv.style.cursor=best?'pointer':'default';
+  if(tip){if(!best){tip.hidden=true;return}const [k,l]=agStatus(best),last=best.runs[0],run=LIVE[best.id];
+    tip.innerHTML=`<b>${esc(best.name)}</b><span class="ag-pill ${k}" style="margin:.25rem 0">${l}</span><div class="m">${esc(schedText(best))}</div><div class="m">${run?'Now: '+esc(nowLabel(run))+' · '+Math.round(tokAt(run,run.clock)/run.cfg.cap*100)+'% tokens':last?'Last: run #'+last.num+' · '+KIND[last.kind][1]:'Not yet run'}</div>`;
+    tip.hidden=false;const tw=tip.offsetWidth;tip.style.left=Math.min(r.width-tw-8,Math.max(8,x+16))+'px';tip.style.top=Math.max(8,y-10)+'px'}});
+document.addEventListener('click',e=>{
+  if(S.page!=='agents')return;
+  if(S.ag.menu&&!e.target.closest('.ae-menuwrap')){S.ag.menu=null;agRender();return}
+  if(e.target.id==='agfleet'){if(S.ag.hoverId)openAgent(S.ag.hoverId);return}
+  const sk=e.target.closest('[data-agseek]');
+  if(sk&&PLAY&&!PLAY.live){const r=sk.getBoundingClientRect();PLAY.clock=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*PLAY.end;if(PLAY.clock>=PLAY.end)PLAY.clock=PLAY.total;agFeedKey='';return}
+  const b=e.target.closest('[data-ag]');if(!b)return;
+  const act=b.dataset.ag,arg=b.dataset.arg,a=agById(arg);
+  const go=()=>{const sc=document.querySelector('#page .k-scroll');render();if(sc){const s2=document.querySelector('#page .k-scroll');if(s2)s2.scrollTop=0}};
+  switch(act){
+    case 'tab':S.ag.tab=arg;S.ag.view='list';S.ag.del=null;agRender();break;
+    case 'layout':S.ag.layout=arg;agRender();break;
+    case 'chip':S.ag.chip=arg;agRender();break;
+    case 'hero':S.ag.hero=!S.ag.hero;agRender();break;
+    case 'open':openAgent(arg);break;
+    case 'back':S.ag.view='list';S.ag.draft=null;go();break;
+    case 'dtab':
+      if(S.ag.dtab==='Settings'&&arg!=='Settings'&&S.ag.draft&&S.ag.draft.dirty)toast('Unsaved changes kept as a draft');
+      S.ag.dtab=arg;S.ag.menu=null;agRender();break;
+    case 'edit':openAgent(arg,'Settings');break;
+    case 'activity':S.ag.view='list';S.ag.tab='Activity';S.ag.actAgent=arg;S.ag.actStatus='All';go();break;
+    case 'actagent':S.ag.actAgent=S.ag.actAgent===arg?'all':arg;agRender();break;
+    case 'actstatus':S.ag.actStatus=arg;agRender();break;
+    case 'pause':if(!a)return;a.status=a.status==='paused'?'active':'paused';toast(a.status==='paused'?(LIVE[a.id]?'Paused. The current run finishes; no new runs start':'Paused. No new runs start'):`Resumed. ${nextText(a)}`);agRender();break;
+    case 'del':S.ag.del=arg;agRender();break;
+    case 'delno':S.ag.del=null;agRender();break;
+    case 'delyes':{const i=AGENTS.findIndex(x=>x.id===arg);if(i<0)return;const n=AGENTS[i].name;AGENTS.splice(i,1);delete LIVE[arg];if(PLAY&&PLAY.a.id===arg)PLAY=null;S.ag.del=null;S.ag.view='list';toast('Deleted '+n);go();break}
+    case 'runnow':case 'retry':if(!a)return;if(LIVE[a.id]){toast('Already running');return}
+      PLAY=startLive(a,act==='retry'?'ok':null);S.ag.view='detail';S.ag.id=a.id;S.ag.dtab='Live';
+      toast(act==='retry'?'Resuming from the checkpoint':a.status==='paused'?'Running once. The schedule stays paused':'Run started');agRender();break;
+    case 'test':{if(!a)return;const d=S.ag.draft;if(LIVE[a.id]){toast('Already running');return}
+      PLAY=startLive(a,d&&d.tools.recommend?'needs':'ok',{cfg:d?JSON.parse(JSON.stringify(d)):null,test:true});S.ag.dtab='Live';toast('Test run with the current settings. Nothing is delivered');agRender();break}
+    case 'play':if(!PLAY)return;if(PLAY.clock>=PLAY.total){PLAY.clock=0}PLAY.playing=!PLAY.playing;agPlayUI();break;
+    case 'replay':if(!PLAY)return;PLAY.clock=0;PLAY.playing=true;agFeedKey='';agPlayUI();break;
+    case 'speed':if(!PLAY)return;PLAY.speed=+arg;agPlayUI();break;
+    case 'replayrun':bindPlay(+arg);S.ag.dtab='Live';agRender();break;
+    case 'replayof':{const [id,num]=arg.split(':');S.ag.view='detail';S.ag.id=id;S.ag.dtab='Live';bindPlay(+num);go();break}
+    case 'gotoap':S.ag.view='list';S.ag.tab='Approvals';if(arg)S.ag.apSel=arg;go();break;
+    case 'menu':S.ag.menu=S.ag.menu===arg?null:arg;agRender();break;
+    case 'skilladd':S.ag.draft.skills.push(arg);S.ag.draft.dirty=true;S.ag.menu=null;agRender();break;
+    case 'skilldel':S.ag.draft.skills.splice(+arg,1);S.ag.draft.dirty=true;agRender();break;
+    case 'trigadd':S.ag.draft.triggers.push(arg==='schedule'?{type:'schedule',freq:'weekly',time:'7:00 AM'}:{type:'event',event:'remittance'});S.ag.draft.dirty=true;agRender();break;
+    case 'trigdel':S.ag.draft.triggers.splice(+arg,1);S.ag.draft.dirty=true;agRender();break;
+    case 'tool':S.ag.draft.tools[arg]=!S.ag.draft.tools[arg];S.ag.draft.dirty=true;agRender();break;
+    case 'approval':S.ag.draft.approval=!S.ag.draft.approval;S.ag.draft.dirty=true;agRender();break;
+    case 'memory':S.ag.draft.memory=!S.ag.draft.memory;S.ag.draft.dirty=true;agRender();break;
+    case 'deliv':S.ag.draft[arg]=!S.ag.draft[arg];S.ag.draft.dirty=true;agRender();break;
+    case 'discard':S.ag.draft=null;agRender();toast('Changes discarded');break;
+    case 'save':{const d=S.ag.draft,ag=agById(d.id);if(!d.name.trim()||!d.instr.trim()){toast('Name and instructions are required');return}if(!d.triggers.length){toast('Add at least one trigger');return}
+      Object.assign(ag,JSON.parse(JSON.stringify({name:d.name.trim(),instr:d.instr.trim(),skills:d.skills,triggers:d.triggers,tools:d.tools,approval:d.approval,cap:d.cap,email:d.email,slack:d.slack,memory:d.memory})));
+      S.ag.draft=null;toast('Saved. Applies from the next run');agRender();break}
+    case 'apsel':S.ag.apSel=arg;S.ag.apNote='';agRender();break;
+    case 'approve':case 'reject':case 'change':{const x=APPROVALS.find(y=>y.id===arg);if(!x)return;const ag=agById(x.from),now=performance.now();
+      if(act==='change'){const v=S.ag.apNote.trim();if(!v){toast('Type the change you want first');const t=el('apnote');if(t)t.focus();return}x.revs.push(v);S.ag.apNote='';FX.push({a:'approvals',b:x.from,t0:now,dur:1000,rgb:AGX.governance});toast('Change request sent to '+(ag?ag.name:'the agent'));agRender();break}
+      x.decided=act==='approve'?'approved':'rejected';S.ag.apNote='';
+      if(act==='approve'&&ag){FX.push({a:'approvals',b:x.from,t0:now,dur:1000,rgb:AGX.governance});FX.push({a:x.from,b:x.target,t0:now+1000,dur:1100,rgb:AGX[STN[x.target].h]});toast(`Approved. ${ag.name} ${x.done}`);setTimeout(()=>{const sc=document.querySelector('#page .k-scroll');if(sc&&S.ag.hero&&sc.scrollTop>200)sc.scrollTo({top:0,behavior:'smooth'})},50)}
+      else toast(act==='approve'?'Approved':'Rejected. Nothing was changed');
+      const nx=APPROVALS.find(y=>!y.decided);if(nx)S.ag.apSel=nx.id;agRender();break}
+    case 'undo':{const x=APPROVALS.find(y=>y.id===arg);if(x){x.decided=null;toast('Back in the queue')}agRender();break}
+  }
+});
+requestAnimationFrame(agLoop);
+/* one agent is mid-run when the page opens, so the fleet map is alive from the first frame */
+startLive(agById('ar90'),'ok',{clock:3600});
+function agDrawNow(){const now=performance.now();const f=el('agfleet');if(f&&fitCanvas(f))drawFleet(f,now);const m=el('agmap');if(m&&PLAY&&fitCanvas(m))drawAgentMap(m,PLAY,now);agFeedKey='';agDomTick()}
+
 render();
 </script>

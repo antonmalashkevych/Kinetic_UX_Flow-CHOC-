@@ -22,4 +22,17 @@ Open `index.html` in a browser. Single self-contained file, no build step, no ne
 
 - Data-access gaps stated first: when Kinetic can't read data the question needs (for example CARC/RARC 129 / N770, drugs, submission dates), the answer opens with a red notice naming what is not accessible, offers Request data access / Attach screenshot or file / Paste data, and labels anything below as partial context (try the "Denial Reason Drill-down" starter prompt)
 
+## Agents (live maps)
+
+The Agents page visualizes existing revenue cycle agents with a live map inspired by lot-map, drawn on the Cerebrum stage (deep radial background, aura nebula, impulses, Cerebrum hues: grounding blue for data, governance amber, agent violet for reasoning, executable orange for outputs). Creating agents moves into chat later, so New agent points to Ana.
+
+- Fleet map (top of My agents, Approvals and Activity): Kinetic core, six agents orbiting, shared stations (Claims, Remittance, Charges, Cerebrum, Skills, Superset, Library, Approvals, You). A running agent sends impulses to the stations it uses; badges show approvals waiting and runs that stopped. Hover for details, click to open the agent. Agents start runs on their own every few seconds.
+- Agent map: the agent in the centre with a token-budget ring (amber at 70%, red at 90%), ten stations around it. Impulses fly out when a call starts and return when it ends, spokes thicken with use, a dotted route joins the last stations visited, clock hands grow around a running station, ×N for parallel calls, red dot for errors, a wide ring when the answer is delivered.
+- Beside the map: line of now, play/pause, replay, 1×/2×/4× and a scrubber for past runs (live runs show a Live pill), the run feed (● running, · done, ✕ failed, ◆ delivered, +N folded), and the result card with findings, outputs and approvals.
+- Runs tab: every run with status, run time, tokens and headline; Replay on map.
+- Settings tab: name, instructions, skills, schedule and event triggers, capabilities, approval, delivery (Kinetic, email, Slack), token cap, memory, pause and delete, Test agent with unsaved settings. Capability and skill changes show on the map from the next run.
+- Approvals: evidence first (finding, 8-week chart, supporting figures, what approving does), decision at the bottom: Approve, Send change request, Reject, Undo. Approving sends an impulse from Approvals to the agent and on to the target on the fleet map.
+- Activity: tokens this month, tokens by agent, all runs across agents with filters and Replay.
+- Demo states: Prior auth denial watch shows a run stopped at the token budget (Retry from checkpoint, Raise the cap); Denial driver monitor run #42 and AR Over 90 Share run #9 show partial data gaps.
+
 All data is mocked. Answers are canned (A/R over 90 days and denied-dollars scenarios). No PHI; figures are synthetic aggregates.
