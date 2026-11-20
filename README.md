@@ -22,6 +22,15 @@ Open `index.html` in a browser. Single self-contained file, no build step, no ne
 
 - Data-access gaps stated first: when Kinetic can't read data the question needs (for example CARC/RARC 129 / N770, drugs, submission dates), the answer opens with a red notice naming what is not accessible, offers Request data access / Attach screenshot or file / Paste data, and labels anything below as partial context (try the "Denial Reason Drill-down" starter prompt)
 
+## Cerebrum page
+
+The Kinetic graph tab is the real Cerebrum stage (the cerebrum-canvas drill build), not a mock. It fills everything the page controls leave free: full width from the sidebar to the edge, down to the bottom of the viewport, on its original near-black background.
+
+- Toolbar (Kinetic controls, above the stage): counts, Group by **Lobe / Region / Kind / Scope**, Find, View / Edit, Reset, Full screen.
+- Scope groups the same neurons into two hemispheres, the client's (CHOC, learned here) and the global one (shared by every client). Each keeps the lobe arrangement; the tracts between them are the cross-scope synapses. Scope shares per kind are sample values; in production it is each node's own scope field.
+- On the stage: breadcrumb, gesture hints, Scenes menu (bottom left), readout (bottom right). Click a lobe, then scroll in, press Enter or double-click to open the data inside (Sankey, node table, neighbours).
+- How it is wired: the stage source is inlined as inert text in `#cerebrum-src` and mounted once in an iframe by `cereMount()`, so it keeps running while the page re-renders (Ask Ana docking, tabs). The toolbar talks to it with `postMessage` (`mode`, `edit`, `reset`, `find`); the stage reports `state` (mode, edit, counts) back. Sound is off in this embed.
+
 ## Agents (live maps)
 
 The Agents page visualizes existing revenue cycle agents with a live map inspired by lot-map, drawn on the Cerebrum stage (deep radial background, aura nebula, impulses, Cerebrum hues: grounding blue for data, governance amber, agent violet for reasoning, executable orange for outputs). Creating agents moves into chat later, so New agent points to Ana.
